@@ -743,13 +743,13 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Page\CartList.cshtml" />
     <Content Include="Views\Page\GoodsDetail.cshtml" />
     <Content Include="Views\Page\GoodsList.cshtml" />
     <Content Include="Views\Page\Index.cshtml" />
     <Content Include="Views\Page\Login.cshtml" />
     <Content Include="Views\Page\Register.cshtml" />
     <Content Include="Views\Page\ShowGoods.cshtml" />
+    <Content Include="Views\Page\CartList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

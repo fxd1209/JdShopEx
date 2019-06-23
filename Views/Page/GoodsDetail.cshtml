@@ -1,12 +1,15 @@
 ﻿@model JdShopEx.Models.Goods
-
-@{
-    ViewBag.Title = "GoodsDetail";
-}
-
-<h2>GoodsDetail</h2>
-
-<h3>@Model.GoodsId</h3>
-<h3>@Model.GoodsName</h3>
-<h3>@Model.GoodsPrice</h3>
-<a href="../AddCart/@Model.GoodsId">加入购物车</a>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<head>
+    <title> @Model.GoodsName 详情页面</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+    <div><img src="@Model.GoodsImg"/></div>
+    <div>
+        <h3>@Model.GoodsName</h3>
+        <span>@Model.GoodsPrice</span>
+        <span>商品详细信息描述</span>
+        <a href="../AddCart/@Model.GoodsId">加入购物车</a>
+    </div>
+</body>

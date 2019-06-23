@@ -225,5 +225,8 @@ namespace JdShopEx.Controllers
             db.SaveChanges();
             return Json(null);
         }
+
+        //显示商品详细信息
+        
     }
 }
