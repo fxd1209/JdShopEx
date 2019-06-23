@@ -180,6 +180,7 @@
     <Content Include="Content\css\saved_resource_sc.css" />
     <Content Include="Content\css\search_list.css" />
     <Content Include="Content\css\shoppingcart1.css" />
+    <Content Include="Content\css\style.css" />
     <Content Include="Content\css\tips_list.css" />
     <Content Include="Content\css\tips_ord.css" />
     <Content Include="Content\Images\maomaozi.jpg" />

@@ -1,3 +1,37 @@
-﻿.mg-t-56{
+﻿
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+.mg-t-56{
     margin-top:56px;
 }
+
+
+
+
+/****************************
+ *购物车列表css  start
+    ******************************/
+.car-list .header {
+    width: 1000px;
+    height: 45px;
+    border: 1px solid rgb(233,233,233);
+    background: rgb(243,243,243);
+}
+
+.car-list th, td {
+    text-align: center;
+    vertical-align: middle !important;
+}
+
+.car-list .total-money {
+    font-size: 56px;
+    color: red;
+    max-width: 156px;
+    border: none;
+}
+/****************************
+ *购物车列表css  end
+    ******************************/

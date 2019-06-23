@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/Content/css/index.css" />
     <script src="/Content/js/jquery-1.6.4.js"></script>
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+
     <script>
         $(function () {
             page(1);
@@ -98,8 +99,8 @@
                     count += o.Count;                       //统计总件数
                     sumprice += o.Goods.GoodsPrice * o.Count; //统计总价
                     str += '<li>';
-                    str += '<img class="img" src="' + o.Goods.GoodsImg + '"/><div class="name">' + o.Goods.GoodsName + '</div>';
-                    str += '<div class="price">￥' + o.Goods.GoodsPrice + 'x' + o.Count + '</div>';
+                    str += '<div class="col-sm-4"><img class="img" src="' + o.Goods.GoodsImg + '"/></div> <div class="col-sm-8"><div class="name">' + o.Goods.GoodsName + '</div>';
+                    str += '<div class="price">￥' + o.Goods.GoodsPrice + 'x' + o.Count + '</div></div>';
                     str += '</li>';
                 });
                 $(".detail>ul").html(str);
@@ -195,8 +196,8 @@
                              
                         </ul>
                         <div class="sum_price">
-                            <span>共4件商品 共计￥8888.00</span>
-                            <a href='CartList'>购物车</a>
+                            <span class="col-sm-8">共4件商品 共计￥8888.00</span>
+                            <a href='CartList' class="btn btn-danger col-sm-4"><span class="glyphicon glyphicon-shopping-cart"></span> 购物车</a>
                         </div>
                     </div>
                 </div>
