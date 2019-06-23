@@ -206,5 +206,15 @@ namespace JdShopEx.Controllers
             db.SaveChanges();
             return Json(null);
         }
+
+ //删除购物车
+        public JsonResult DelCartId()
+        {
+            int cartId = int.Parse(Request["cartId"]);
+            Cart cart = db.Carts.Single(c => c.CartId == cartId);
+            db.Carts.Remove(cart); //删除购物车商品
+            db.SaveChanges();
+            return Json(null);
+        }
     }
 }
