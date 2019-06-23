@@ -30,11 +30,11 @@
     </div>
     <div class="container body-content">
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - 我的 ASP.NET 应用程序</p>
-        </footer>
     </div>
+    <hr />
+    <footer class="container footer text-center">
+        <p>&copy; @DateTime.Now.Year - 我的 ASP.NET 应用程序</p>
+    </footer>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")

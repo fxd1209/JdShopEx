@@ -29,7 +29,7 @@
                     str += '<span class="price mg-l-5-per">' + o.GoodsPrice + '</span>';
                     str += '<span class="title mg-l-5-per">' + o.GoodsName + '</span>'; 
                     str += '<a href="javascript:void(0);" class="btn btn-danger mg-l-5-per" onclick="addCart(' + o.GoodsId + ')"><span class="glyphicon glyphicon-plus-sign"></span> 加购物车</a> ';
-                    str += '<a href="GoodsDetail" class="btn btn-danger mg-r-5-per" onclick="goodsDetailJs(' + o.GoodsId + ')"><span class="glyphicon glyphicon-info-sign"></span> 详情</a></li>';
+                    str += '<a href="javascript:void(0);" class="btn btn-danger mg-r-5-per" onclick="goodsDetaiPopUpLayer(\'GoodsDetail\' ,' + o.GoodsId+')"><span class="glyphicon glyphicon-info-sign"></span> 详情</a></li>';
                 });
                 //拼接分页的商品列表
                 $(".goods_list").html(str);
@@ -124,10 +124,6 @@
             page(val);
         }
 
-        //跳转到商品详情页面
-        function goodsDetailJs(goodsid) {
-            $.post("GoodsDetailJs", { goodsId: goodsid });
-        }
     </script>
 </head>
 
@@ -254,6 +250,39 @@
             </span>
         </div>
     </div>
-   
+    <script src="~/Content/js/layer/layer.js"> </script>
+    <script type="text/javascript">
+ /**
+ * 商品详情弹出层
+ *pageurl 弹出层路径
+ * submiturl 弹出层数据提交路径
+ */
+
+        var goodsDetaiPopUpLayer = function (url, data) {
+            var pageurl = url+ "?goodsId="+data;
+            layer.open({
+                type: 2,//2表示弹出框类型
+                title: '详情',
+                skin: 'CLYM-style',
+                btn: ['确定',"关闭"],
+                maxmin: false,
+                area: ['1156px', '656px'],
+                shift: 1,//弹出框动画效果
+                scrollbar: false, // 父页面 滚动条 禁止
+                content: pageurl,
+                //确定按钮被点击 ,index 当前层索引 layero 当前层的doc 顺序和success的相反
+                yes: function (index, layero) {
+                    layer.close(index);
+                },
+                btn2: function (index, layero) {
+                    window.location.reload();//刷新页面
+                },
+                //弹出界面成功后执行
+                success: function (layero, index) { },
+                //layer结束时调用
+                end: function () { }
+            })
+        };
+    </script>
 </body>
 </html>

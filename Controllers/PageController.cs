@@ -66,7 +66,11 @@ namespace JdShopEx.Controllers
         {
             //得到session
             User user = (User)Session["user"];
-            ViewBag.username = user.UserName;
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+           ViewBag.username = user.UserName;
             return View();
         }
         //页面通过ajax的请求得到分页的商品数据
@@ -226,20 +230,25 @@ namespace JdShopEx.Controllers
             db.SaveChanges();
             return Json(null);
         }
-        public JsonResult GoodsDetailJs()
-        {
 
-            int goodsid = int.Parse(Request["goodsId"]);
+        /**
+         * 显示商品详细信息，取消原来post数据，直接链接，下面放session里面是很不合理的
+         * */
+        public ActionResult GoodsDetail()
+        {
+            int goodsid = int.Parse(Request.Params["goodsId"]);
+          //  int goodsid = int.Parse(Request["goodsId"]);
             var good = db.Goods.Find(goodsid);
-            Session["GoodDetail"] = good;
-            return Json(null);
+            ViewData["GoodDetail"] = good;
+            //  Session["GoodDetail"] = good;
+            return View();
         }
         //显示商品详细信息
-     
-         public  ActionResult GoodsDetail()
-         {
-             return View();
-         }
+         //public  ActionResult GoodsDetail()
+         //{
+            
+         //    return View();
+         //}
     }
     
 }
