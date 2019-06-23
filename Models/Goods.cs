@@ -12,5 +12,7 @@ namespace JdShopEx.Models
         public double GoodsPrice { get; set; }  //商品单价
         public string GoodsImg { get; set; }    //商品库存
 
+        public string GoodsDetail { get; set; } //商品详细信息
+
     }
 }

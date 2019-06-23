@@ -107,11 +107,11 @@ namespace JdShopEx.Controllers
 
 
         //显示商品详情
-        public ActionResult GoodsDetail(int id)
+      /*  public ActionResult GoodsDetail(int id)
         {
             var goods = db.Goods.Find(id);
             return View(goods);
-        }
+        }*/
 
         //ajax添加购物车
         [HttpPost]
@@ -225,6 +225,15 @@ namespace JdShopEx.Controllers
             db.Carts.Remove(cart); //删除购物车商品
             db.SaveChanges();
             return Json(null);
+        }
+
+        //显示商品详细信息
+        [HttpPost]
+        public  ActionResult GoodsDetail()
+        {
+            int goodsid = int.Parse(Request["goodsId"]);
+            var good = db.Goods.Find(goodsid);
+            return (View(good));
         }
     }
 }
