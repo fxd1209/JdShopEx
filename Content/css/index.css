@@ -487,8 +487,8 @@ a{ text-decoration:none; }
 }
 .goods_list>li .goodsimg
 {
-    width:220px;
-    height:280px;
+    width:156px;
+    height:156px;
     margin:10px 5px;
     }
 .goods_list>li .price{
@@ -505,11 +505,12 @@ a{ text-decoration:none; }
 .addcart:hover {
     border: 2px solid;
     border-color:red;
-    margin-top: 15px;
+    margin-top: 5px;
 }
 .goods_list>li:hover{
-	outline:4px solid;
-    border-color:aliceblue;
+	outline:2px solid red;
+ 
+    /*border-radius:10px 10px 10px 10px !important;*/
 	cursor:pointer;
 }
 /*按钮组*/
