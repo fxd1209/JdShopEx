@@ -1,5 +1,21 @@
 *{margin:0px;padding:0px;font-family:'微软雅黑'; list-style:none;}
 body{background:white;}
+
+.mg-b-20{
+    margin-bottom:20px;
+}
+.mg-l-5-per{
+    margin-left:5%;
+}
+.mg-r-5-per {
+    margin-right: 5%;
+}
+.pd-b-20 {
+    padding-bottom: 20px;
+}
+
+
+
 /*头部div样式*/
 .bg_nav{
 	width:100%;
@@ -478,18 +494,29 @@ a{ text-decoration:none; }
 	margin:auto;
 	clear:both;
 }
-.goods_list>li{
-	width:230px;
-	height:420px;
-    
-	float:left;
-	margin-top:45px;
-}
-.goods_list>li .goodsimg
-{
-    width:156px;
-    height:156px;
-    margin:10px 5px;
+    .goods_list > li {
+        width: 230px;
+        float: left;
+        background: #F5F5F5;
+        margin-top: 40px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+.goods_list img {
+        /*图片上的动画在1.5秒内完成*/
+        transition: all 1.5s;
+    }
+/*图片上的动画放大1.2*/
+    .goods_list img:hover {
+        transform: scale(1.2);
+        cursor: pointer;
+    }
+    .goods_list > li .goodsimg {
+        width: 90%;
+        height: 180px;
+        margin-top: 15px;
+        margin-left: 5%;
+        margin-right: 5%;
     }
 .goods_list>li .price{
 	display:block;
@@ -507,12 +534,7 @@ a{ text-decoration:none; }
     border-color:red;
     margin-top: 5px;
 }
-.goods_list>li:hover{
-	outline:2px solid red;
- 
-    /*border-radius:10px 10px 10px 10px !important;*/
-	cursor:pointer;
-}
+
 /*按钮组*/
 .btns{
 	width:700px;

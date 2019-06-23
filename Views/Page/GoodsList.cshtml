@@ -24,12 +24,12 @@
                 var str = '';
                 var str = '';
                 $.each(goodsList, function (i, o) {
-                    str += '<li>';
-                    str += '<img class="goodsimg" src="' + o.GoodsImg + '"/>';
-                    str += '<span class="price">' + o.GoodsPrice + '</span>';
-                    str += '<span class="title">' + o.GoodsName + '</span>'; 
-                    str += '<a href="javascript:void(0);" class="btn btn-default" onclick="addCart(' + o.GoodsId + ')"><span class="glyphicon glyphicon-plus-sign"></span> 加购物车</a> ';
-                    str += '<a href="javascript:void(0);" class="btn btn-default" ><span class="glyphicon glyphicon-info-sign"></span> 详情</a></li>';
+                    str += '<li class="pd-b-20">';
+                    str += '<img class="goodsimg img-circle" src="' + o.GoodsImg + '"/>';
+                    str += '<span class="price mg-l-5-per">' + o.GoodsPrice + '</span>';
+                    str += '<span class="title mg-l-5-per">' + o.GoodsName + '</span>'; 
+                    str += '<a href="javascript:void(0);" class="btn btn-danger mg-l-5-per" onclick="addCart(' + o.GoodsId + ')"><span class="glyphicon glyphicon-plus-sign"></span> 加购物车</a> ';
+                    str += '<a href="javascript:void(0);" class="btn btn-danger mg-r-5-per" ><span class="glyphicon glyphicon-info-sign"></span> 详情</a></li>';
                 });
                 //拼接分页的商品列表
                 $(".goods_list").html(str);
