@@ -44,20 +44,15 @@
                                     </a>
                                 </td>
                             </tr>
-
-                            @*<ul class="sp list-group">
-                        <li class=""><input type="checkbox" value="@cart.CartId" /><img style="width:82px;height:82px;" src="@cart.Goods.GoodsImg" /></li>
-                        <li>@cart.Goods.GoodsName</li>
-                        <li>@cart.Goods.GoodsPrice</li>
-                        <li>
-                            <input value="-" type="button" class="add" onclick="minus(@cart.CartId,this)" /><input value="@cart.Count" class="text" /><input value="+" type="button" class="add" onclick="add(@cart.CartId,this)" /><input value="删除" type="button" class="btn" onclick="del(@cart.CartId)" />
-                        </li>
-                        <li></li>
-                    </ul>*@
                         }
                     </tbody>
                 </table>
                 <div>
+                    <div class="pull-left">
+                        <a href="javascript:void(0);" class="btn btn-danger" style="margin-right:70px;" onclick="JavaScript:window.location.href = document.referrer; ">
+                            <span class="glyphicon glyphicon-backward"></span> 返回首页
+                        </a>
+                    </div>
                     <div class="pull-right">
                         <span>总计:</span><input type="text" value="0" class="total-money" id="total-money" readonly />
                         <a href="javascript:void(0);" class="btn btn-danger" style="margin-right:70px;" onclick="totalPrice()">
@@ -65,8 +60,6 @@
                         </a>
                     </div>
                 </div>
-                @*<div style="width:200px;float:right;">总计:<font color="red" size="7" id="sumprice">0</font></div>*@
-                <!--<div style="width:150px;float:right;"><input value="结算" type="submit" class="btn"/></div>-->
             </form>
 	  	</div>
   </body>
