@@ -74,7 +74,7 @@ namespace JdShopEx.Controllers
         public ActionResult GoodsList(string title = "", int pageIndex = 1)
         {
             //然后设置每页显示的条数
-            int pageSize = 12;
+            int pageSize = 10;
             //根据商品的编号排序，然后contains模糊查询 ,然后通过skip和take取得数据
             var goods = db.Goods.Where(g => g.GoodsName.Contains(title)).OrderBy(g => g.GoodsId).Skip((pageIndex - 1) * pageSize).Take(pageSize);
             //构建视图模型，填充商品列表和分页的数据
@@ -104,6 +104,14 @@ namespace JdShopEx.Controllers
             return Json(jsonObject, JsonRequestBehavior.AllowGet);
         }
 
+
+
+        //显示商品详情
+        /*  public ActionResult GoodsDetail(int id)
+          {
+              var goods = db.Goods.Find(id);
+              return View(goods);
+          }*/
 
         //ajax添加购物车
         [HttpPost]
@@ -232,14 +240,6 @@ namespace JdShopEx.Controllers
          {
              return View();
          }
-
-        //添加收获地址
-        public  JsonResult AddAdress()
-        {
-
-            return null;
-        }
-        
     }
     
 }
