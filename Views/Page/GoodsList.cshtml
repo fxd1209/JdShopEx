@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>无标题文档</title>
+<title>商品列表</title>
 <link rel="stylesheet" href="/Content/css/index.css"/>
 <script src="/Content/js/jquery-1.6.4.js"></script>
 <script>
@@ -19,12 +19,14 @@
             var pageIndex = data.PageInfo.PageIndex;
             var total = data.PageInfo.Total;
             var str = '';
+            var str = '';
             $.each(goodsList, function (i, o) {
                 str += '<li>';
                 str += '<img class="goodsimg" src="' + o.GoodsImg + '"/>';
                 str += '<span class="price">' + o.GoodsPrice + '</span>';
                 str += '<span class="title">' + o.GoodsName + '</span>';
-                str += '<img class="addcart" onclick="addCart('+o.GoodsId+')" src="/Content/image/addcart.png"/></li>';
+                str += '<img class="addcart" onclick="addCart(' + o.GoodsId + ')" src="/Content/image/addcart.png"/></li>';
+                str += '<span class="title"> 显示详细信息</span>';
             });
             //拼接分页的商品列表
             $(".goods_list").html(str);

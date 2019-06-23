@@ -189,11 +189,20 @@ namespace JdShopEx.Controllers
         public JsonResult ComputedPrice(int[] cartId)
         {
             double sum = 0;
-            foreach (int id in cartId)
+            /*添加if-else判断，当购物车为空时，不会抛出异常*/
+            if (cartId == null)
             {
-                Cart cart = db.Carts.Include("Goods").Single(c => c.CartId == id);
-                sum += cart.Count * cart.Goods.GoodsPrice;
+                sum = 0000;
             }
+            else
+            {
+                foreach (int id in cartId)
+                {
+                    Cart cart = db.Carts.Include("Goods").Single(c => c.CartId == id);
+                    sum += cart.Count * cart.Goods.GoodsPrice;
+                }
+            }
+
             //get方式访问一定要后面这句
             return Json(sum, JsonRequestBehavior.AllowGet);
         }
@@ -207,7 +216,8 @@ namespace JdShopEx.Controllers
             return Json(null);
         }
 
- //删除购物车
+
+        //删除购物车
         public JsonResult DelCartId()
         {
             int cartId = int.Parse(Request["cartId"]);
