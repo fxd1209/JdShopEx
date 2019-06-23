@@ -6,25 +6,26 @@
 <head>
     <title> @goodDetail.GoodsName 详情页面</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/css/style.css" />
     <script src="/Content/js/jquery-1.6.4.js"></script>
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 </head>
 <style>
     .col-sm-4 img{
         width:100%;
-        height:100%;
+        height:356px;
     }
 </style>
 <body>
-    <div class="col-sm-4">
+    <div class="col-sm-4 mg-t-56">
         <img src="@goodDetail.GoodsImg"/>
     </div>
-    <div class="col-sm-8">
-        <h3>@goodDetail.GoodsName</h3>
-        <span>@goodDetail.GoodsPrice</span>
-        <span>商品详细信息描述</span>
-        <a href="../AddCart/@goodDetail.GoodsId">加入购物车</a>
+    <div class="col-sm-8  mg-t-56">
+        <h3><span class="sub-title">商品名称:</span>@goodDetail.GoodsName</h3>
+        <h3><span>亲民价格:</span><span class="text-danger" style="font-size:56px; ">@goodDetail.GoodsPrice</span></h3>
+        <p>商品详细信息描述</p>
+        <p>我是描述哦</p>
+        <a href="./AddCart/@goodDetail.GoodsId">加入购物车</a>
     </div>
 </body>
