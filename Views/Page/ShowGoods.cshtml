@@ -1,0 +1,48 @@
+﻿@model IEnumerable<JdShopEx.Models.Goods>
+@{
+    ViewBag.Title = "ShowGoods";
+}
+
+<h2>ShowGoods</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table>
+    <tr>
+        <th></th>
+        <th>
+            GoodsName
+        </th>
+        <th>
+            GoodsPrice
+        </th>
+        <th>
+            GoodsImg
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.GoodsId }) |
+                @Html.ActionLink("Details", "Details", new { id = item.GoodsId }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.GoodsId })|
+                @Html.ActionLink("AddCart","AddCart",new { id = item.GoodsId })
+
+            </td>
+            <td>
+                @item.GoodsName
+            </td>
+            <td>
+                @String.Format("{0:F}", item.GoodsPrice)
+            </td>
+            <td>
+                @item.GoodsImg
+            </td>
+        </tr>
+    }
+
+</table>
+

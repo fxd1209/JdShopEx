@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <style type="text/css">
+            *{
+                margin: 0;
+                padding: 0;
+            }
+            .content{
+                 margin-left: 200px;
+            }
+            .header h1{
+                    margin-top: 50px;
+                    color: #6C5B43;
+                    font-size: 30px;
+                    font-style: 黑体;
+            }
+           
+            .box{
+                float: right;
+                margin-right: 100px;
+            }
+
+            .box span{
+                color: #A897AC;
+            }
+            .box a{
+                color:#323534;
+                text-decoration: none;
+                font-style:微软雅黑;
+            }
+            .username{
+                margin-top: 80px;
+                letter-spacing: 10px;
+                height: 60px;
+                width:380px;
+                 border: 1px solid #E1E0DD;
+            }
+            .username b{
+                    padding-left: 20px;
+                    padding-top: 10px;
+            }
+            .username input{
+                width: 258px;
+                height: 45px;
+                border: 1px solid #FFFFFF;
+               padding-top: 10px;
+            }
+           
+            .password{
+                margin-top: 40px;
+                letter-spacing: 5px;
+                height: 60px;
+                width:380px;
+                 border: 1px solid #E1E0DD;
+            }
+            .password b{
+                    padding-left: 20px;
+                    padding-top: 10px;
+            }
+            .password input{
+                width: 258px;
+                height: 45px;
+                border: 1px solid #FFFFFF;
+               padding-top: 10px;
+            }
+
+            .read{
+                margin-top: 30px;
+            }
+
+            .read span{
+                color: #323534;
+                font-size: 14px;
+            }
+            .read a{
+                color: #5387FF;
+                font-size: 14px;
+                text-decoration: none;
+            }
+
+            .register{
+                background: #FF0000;
+                width: 450px;
+                height:35px;
+                margin-top: 50px;
+                padding-top: 20px;
+            }
+
+             .register a{
+                font-weight: bold;
+                margin-left: 190px;
+                font-size: 18px;
+                color: #FFFFFF;
+                text-decoration: none;
+            }
+            .b a{
+            #323534;    float: right;
+                margin-right: 370px;
+                margin-top: -70px;
+                text-decoration: none;
+                color: #323534;
+                font-size: 14px;
+            }
+            .b a:hover{
+                color: #323534;
+                font-weight: bold;
+            }
+               .c a{
+              float: right;
+                margin-right: 360px;
+                margin-top: -70px;
+                text-decoration: none;
+                color: #323534;
+                font-size: 18px;
+                font-style: 微软雅黑;
+            }
+            .c a:hover{
+                color: #323534;
+                font-weight: bold;
+            }
+        /*     /hr{
+            width: 150px;
+            margin-left:650px;
+            color: #E1E0DD;
+        } */
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="header">
+                <h1>-欢迎注册</h1>
+                <div class="box">
+                        <span>已有账号？</span><a href="#">请登录</a>
+                </div> 
+        </div>
+     
+        <div class="body">
+            <form id="myform" action="Register" method="post">
+                    <p>
+                            <div class="username">
+                                        <b>用户名</b><input type="text" name="UserName" placeholder="您的账户名和登录名">
+                            </div>
+                            <div class="b">
+                                                    <a href="#">企业用户注册</a>
+                            </div>
+                    </p>
+                     <!-- <hr> -->
+                    <p>
+                            <div class="password">
+                                        <b>设置密码</b><input type="password" name="PassWord" placeholder="建议至少使用两种字符组合">
+                            </div>
+                           
+                            <div class="c">
+                                                    <a href="#" >INTERNATION<br>CUSTOMERS</a>
+                            </div>
+                    </p>
+                      <p>
+                            <div class="password">
+                                        <b>确认密码</b><input type="password" name="password" placeholder="请再次输入密码">
+                            </div>
+                    </p>
+                    <p>
+                            <div class="read">
+                                        <input name="checkbox" type="checkbox" value="checkbox" checked="checked" />
+                                        <span>我已阅读并同意</span><a href="#">《京东用户注册协议》</a>
+                            </div>
+                    </p>
+
+                    <p>
+                            <div class="register" onclick="isSubmit()">
+                                        <a class="s" href="#" >立即注册</a>
+                            </div>     
+                    </p>
+                </form>
+        </div> 
+    </div>
+</body>
+</html>
+<script src="/Content/js/jquery-1.6.4.js"></script>
+<script>
+    function isSubmit() {
+        $("#myform").submit();
+    }
+
+</script>

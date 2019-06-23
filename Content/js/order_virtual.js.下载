@@ -1,0 +1,1127 @@
+  function showScrollVirtual(e){
+    if(0 == e){ // 点击礼品卡tab
+      initGiftScroll();
+    }
+  }window.showScrollVirtual=showScrollVirtual;
+
+  /******* 公共变量**********/
+  var BALANCE_PWD_TYPE = "balancePwdType";
+  var JING_PWD_TYPE = "jingPwdType";
+  var DONG_FREIGHT_PWD_TYPE = "dongfreightPwdType";
+  var LPK_PWD_TYPE = "lpkPwdType";
+  var dongType = "dongType";
+  var jingType = "jingType";
+  var freeFreight = "freeFreightType";
+  /*********** 优惠券部分 ***************/
+  // 优惠券滚动
+  var scrollCoupon = null;
+   // 运费券滚动
+  var scollFreight = null;
+  function initCouponScroll(){
+    //计算高度
+    $(".coupon-scrollbar .coupon-enable").height(Math.ceil($(".coupon-scrollbar .coupon-enable ul li").length/4) * 120);
+    $('.coupon-freefreight').parents(".ui-scrollbar-wrap").hide();
+    var couponlength = $(".coupon-scrollbar .coupon-enable ul li").length;
+    couponlength = couponlength+ $(".coupon-scrollbar .coupon-disable ul li").length;
+    if(couponlength<10){
+      return;
+    }
+    if(!scrollCoupon) {
+      scrollCoupon = $('.coupon-scrollbar').scrollbar({
+        width: 11,
+        scrollClass: 'ui-scrollbar-item-consignee',
+        mainClass: 'ui-scrollbar-main',
+        hasHeadTail: false,
+        limit: true,
+        wrapHeight: 360
+      });
+    }
+    else {
+      scrollCoupon.update();
+    }
+    $('.coupon-scrollbar').parents(".ui-scrollbar-wrap").show().children().show();
+  }
+
+ 
+function initFreightScroll(){
+    //计算高度
+    $(".coupon-freefreight .coupon-enable").height(Math.ceil($(".coupon-freefreight .coupon-enable ul li").length/4) * 125);
+    var length = $(".coupon-freefreight .coupon-enable ul li").length;
+    length = length+$(".coupon-freefreight .coupon-disable ul li").length;
+    if(length<10){
+      return;
+    }
+    $('.coupon-scrollbar').parents(".ui-scrollbar-wrap").hide();
+    if(!scollFreight) {
+      scollFreight = $('.coupon-freefreight').scrollbar({
+        width: 11,
+        scrollClass: 'ui-scrollbar-item-consignee',
+        mainClass: 'ui-scrollbar-main',
+        hasHeadTail: false,
+        limit: true,
+        wrapHeight: 360
+      });
+    } else {
+      scollFreight.update();
+    }
+    $('.coupon-freefreight').parents(".ui-scrollbar-wrap").show().children().show();
+  }
+  //切换初始化滚动条
+  function showScrollCoupon(e){
+    switch (e){
+      case 0:
+        initCouponScroll();
+        break;
+      case 1:
+        initFreightScroll();
+        break;
+    }
+    $('#currTab').val(e);
+  }window.showScrollCoupon=showScrollCoupon;
+
+//查询优惠券
+function query_coupons_vertual(syncSign) {
+
+    if($("#bestCouponCheck").is(':checked')){
+      return;
+    }
+    var param = addFlowTypeParam();
+    var url = OrderAppConfig.DynamicDomain + "/coupon/getCoupons.action";
+    jQuery.ajax({
+      type : "POST",
+      dataType : "text",
+      url : url,
+      data : param,
+      async : !syncSign,
+      cache : false,
+      success : function(result) {
+        if (isUserNotLogin(result)) {
+            goToLogin();
+          return;
+        }
+        if (isHasMessage(result)) {
+          var message = getMessage(result);
+          alert(message);
+          return;
+        }
+        if($(result).find('.coupon-enable .item-selected .c-jing').length>0){
+        	checkPaymentPasswordSafe(JING_PWD_TYPE);
+        }else{
+        	checkPaymentPasswordSafe(DONG_FREIGHT_PWD_TYPE);
+        }
+        $("#" + OrderAppConfig.Module_Coupon).html(result);
+        entityCouponInputEventInit();// 实体券输入框初始化
+        isNeedPaymentPassword(); // 是否需要支付密码
+        refushVertualused();
+        resetFreightCouponTip(); //运费券可用提醒
+      },
+      error : function(XMLHttpResponse) {
+        //alert("系统繁忙，请稍后再试！");
+      }
+    });
+}window.query_coupons_vertual = query_coupons_vertual;
+
+/**
+*  当有可用的运费券时，展示小红点
+*/
+function resetFreightCouponTip(){
+  if($(".coupon-freefreight .coupon-enable ul li").length > 0){
+      if($("#freightcoupontit i").length == 0){
+          $("#freightcoupontit").append("<i></i>");
+      }
+  } else {
+      $("#freightcoupontit i").remove();
+  }
+}window.resetFreightCouponTip=resetFreightCouponTip;
+$(function(){
+    resetFreightCouponTip();
+});
+
+function userOrCancelCouponVertual(key,id,a){
+  if($("#selected_coupon_"+id).hasClass("item-selected")){
+    /**取消使用优惠券**/
+    useOrCancelCoupon(OrderAppConfig.DynamicDomain + "/coupon/cancelCoupon.action",id, 0);
+  }else{
+    useOrCancelCoupon(OrderAppConfig.DynamicDomain + "/coupon/useCoupon.action",key, 1);
+  }
+}
+
+//获取优惠券信息
+function useOrCancelCoupon(url, id, flag) {
+  var param = "";
+  if (flag == 1) {// 使用券传的是couponKey
+    param += "couponParam.couponKey=" + id;
+  } else {// 取消券使用的是couponId
+    param += "couponParam.couponId=" + id;
+  }
+  param += "&couponParam.pageNum="+$("#pageNum").val();
+  param = addFlowTypeParam(param);
+  jQuery.ajax({
+    type : "POST",
+    dataType : "text",
+    url : url,
+    data : param,
+    async : true,
+    cache : false,
+    success : function(result) {
+      if (isUserNotLogin(result)) {
+        goToLogin();
+        return;
+      }
+      if (isHasMessage(result)) {
+        var message = getMessage(result);
+        alert(message);
+        if(flag==1){
+          if($("#selected_coupon_"+id).hasClass("item-selected")){
+              $("#selected_coupon_"+id).removeClass("item-selected");
+            }
+        }else{
+           if ($("#coupon_"+id).parent().parent().hasClass("item-selected")) {
+              $("#coupon_"+id).parent().parent().removeClass("item-selected");
+          }
+        }
+        return;
+      }
+      if(flag==1 && $(result).find('.coupon-enable .item-selected .c-jing').length>0){
+    	  checkPaymentPasswordSafe(JING_PWD_TYPE, 0);// 用户安全，检查是否开启支付密码
+      }else{
+      	checkPaymentPasswordSafe(DONG_FREIGHT_PWD_TYPE, 0);
+      }
+      $("#" + OrderAppConfig.Module_Coupon).html(result);
+      // 刷新显示：优惠券优惠金额，礼品卡优惠金额，余额优惠金额，实际应付总金额
+      
+      if($(".coupon-freefreight div[id= selected_coupon_"+id+"]").length>0){
+         $("#freightcoupontit").click();
+      }
+      useCancelEditJdBean(0, null, true);
+      flushOrderPriceByCoupon(); // 改变优惠券状态
+      checkCouponWaste();// 检查优惠券是否存在浪费情况
+      isNeedPaymentPassword(); // 是否需要支付密码
+      refushCouponPrice();
+      refushVertualused();
+      entityCouponInputEventInit();// 实体券输入框初始化
+    }
+  });
+}
+//使用优惠券刷新 礼品卡使用金额
+function refushCouponPrice(){
+  $("#giftCardPricehidden").val($("#hiddenGiftCardDiscount_coupon").val());
+}
+
+function getBastCouponList(obj){
+  var flag = (obj.checked) ? "1" : "0";
+  if(flag == 0){
+    query_coupons_vertual();
+    resetCoupontab();
+    $("#isBestCoupon").val("0");
+  }else{
+    var param = "";
+    var url =OrderAppConfig.DynamicDomain + "/coupon/getBestVertualCoupons.action";
+    param = addFlowTypeParam(param);
+    jQuery.ajax({
+      type : "POST",
+      dataType : "text",
+      url : url,
+      data : param,
+      async : true,
+      cache : false,
+      success : function(result) {
+        if (isUserNotLogin(result)) {
+          goToLogin();
+          return;
+        }
+        if (isHasMessage(result)) {
+          var message = getMessage(result);
+          alert(message);
+          if (obj.checked) {
+            obj.checked = false;
+          }
+          return;
+        }
+        if($(result).find('.coupon-enable .item-selected .c-jing').length>0){
+        	checkPaymentPasswordSafe(JING_PWD_TYPE);
+        }else{
+        	checkPaymentPasswordSafe(DONG_FREIGHT_PWD_TYPE);
+        }
+        $("#" + OrderAppConfig.Module_Coupon).html(result);
+        // 刷新显示：优惠券优惠金额，礼品卡优惠金额，余额优惠金额，实际应付总金额
+        useCancelEditJdBean(0, null, true);
+        flushOrderPriceByCoupon(); // 改变优惠券状态
+        checkCouponWaste();// 检查优惠券是否存在浪费情况
+        isNeedPaymentPassword(); // 是否需要支付密码
+        refushCouponPrice();
+        refushVertualused();
+        refushBastCoupon();
+        entityCouponInputEventInit();// 实体券输入框初始化
+        $("#isBestCoupon").val("1");
+      }
+    });
+  }
+}window.getBastCouponList=getBastCouponList;
+
+/**
+ * 使用兑换码兑换优惠券 
+ * 
+ */
+function exchangeVertualCoupons(obj) {
+  if ($('#couponKeyPressFirst').val() == "" || $('#couponKeyPressSecond').val() == "" || $('#couponKeyPressThrid').val() == ""
+      || $('#couponKeyPressFourth').val() == "") {
+    $("#couponKeyPressFirst").parents().find(".error-msg").text("请输入优惠券兑换码！");
+    $("#couponKeyPressFirst").parents().find(".error-msg").show();
+    return;
+  }
+
+  var param = "couponParam.fundsPwdType=Coupon";
+  var url = OrderAppConfig.DynamicDomain + "/coupon/checkFundsPwdResult.action";
+  param = addFlowTypeParam(param);
+  jQuery.ajax({
+    type : "POST",
+    dataType : "json",
+    url : url,
+    data : param,
+    async : true,
+    cache : false,
+    success : function(flag) {
+      if (isUserNotLogin(flag)) {
+        goToLogin();
+        return;
+      }
+      if (flag) {
+        var key = $("#couponKeyPressFirst").val() + $("#couponKeyPressSecond").val() + $("#couponKeyPressThrid").val() + $("#couponKeyPressFourth").val();
+        $("input[id^='couponKeyPress']").each(function() {
+          $(this).val("");
+        });
+        var param = "couponParam.couponKey=" + key;
+        param = addFlowTypeParam(param);
+        jQuery.ajax({
+          type : "POST",
+          dataType : "json",
+          url : OrderAppConfig.AsyncDomain + "/coupon/exchangeCoupons.action",
+          data : param,
+          async : true,
+          cache : false,
+          success : function(result) {
+            if (isUserNotLogin(result)) {
+              goToLogin();
+              return;
+            }
+            if (!result.resultFlag) {
+              var message = result.message;
+             // showMessageError(message);
+              $("#couponKeyPressFirst").parents().find(".error-msg").text(message);
+              $("#couponKeyPressFirst").parents().find(".error-msg").show();
+              if (obj.checked) {
+                obj.checked = false;
+              }
+              return;
+            }
+            showMessageSucc(result.message);
+            query_coupons_vertual();
+            showEntityPanel();
+          }
+        });
+      } else {
+        showLargeMessage("支付密码未开启", "为保障您的账户资金安全，请先开启支付密码");
+        return;
+      }
+    }
+  });
+}
+window.exchangeVertualCoupons = exchangeVertualCoupons;
+
+/**
+刷新最优组合
+*/
+function refushBastCoupon(){
+  if($("#couponUseNum").val()!=undefined){
+      var tip = "使用最优组合，共抵用<span class='money'>",
+      discount= eval(parseFloat($("#hiddenCouponDiscount").val()) + parseFloat($("#hiddenFreeFreight_coupon").val()));
+      tip+=parseFloat(discount).toFixed(2);
+      tip+="元</span>：";
+      var couponNum = $("#couponUseNum").val();
+      var freeFreightCouponUseNum = $("#freeFreightCouponUseNum").val();
+      freeFreightCouponUseNum = isNaN(freeFreightCouponUseNum) ? 0 : Number(freeFreightCouponUseNum);
+
+      var isFreight= false;
+      if($("#hiddenFreeFreight_coupon").val() > 0) {
+        couponNum= couponNum-freeFreightCouponUseNum;
+        isFreight=true;
+      }
+      if(couponNum>0)
+        tip+="使用优惠券"+couponNum+"张 ";
+      if(isFreight){
+        tip+="运费券" + freeFreightCouponUseNum + "张";
+      }
+      $("#bestCoupon").html(tip);
+      //隐藏 coupontab
+      hideCoupontab();
+    }
+}
+function hideCoupontab(){
+  $(".coupon-cont .coupon-tab").hide();
+}
+function showCoupontab(){
+  $(".coupon-cont .coupon-tab").show();
+}
+function resetCoupontab(){
+    $("#bestCouponCheck").attr("checked",false);
+    $("#bestCoupon").text("使用最优组合");
+    showCoupontab();
+}
+/**
+* 刷新价格信息
+*/
+function refushVertualused(){
+  // 运费券
+  var totaldiscount= 0.00;
+  var couponNum = $("#couponUseNum").val();
+  var freeFreightCouponUseNum = $("#freeFreightCouponUseNum").val();
+  freeFreightCouponUseNum = isNaN(freeFreightCouponUseNum) ? 0 : Number(freeFreightCouponUseNum);
+  var isHasVertualShow =false;
+  // 修改优惠券结算信息
+  if($("#hiddenCouponDiscount")[0]) {
+    // 运费券金额拆分再合并
+    var couponDiscount = $("#hiddenCouponDiscount").val();
+    if($("#hiddenFreeFreight_coupon").val() > 0) {
+      couponNum = couponNum-freeFreightCouponUseNum;
+    }
+    if(couponDiscount>0){
+      var couponShow="优惠券<em>"+couponNum+"</em>张，优惠<em>"+parseFloat(couponDiscount).toFixed(2)+"</em>元 ";
+      $("#couponTotalDiscount").text(parseFloat(couponDiscount).toFixed(2));
+      $("#couponTotalShow").html(couponShow);
+      isHasVertualShow=true;
+      $("#couponTotalShow").css("display", "block");
+      totaldiscount=eval(parseFloat(totaldiscount)+parseFloat(couponDiscount));
+    }else{
+      $("#couponTotalShow").css("display", "none");
+    }
+    $("#couponNum").text(couponNum);
+  }else{
+    $("#couponTotalShow").css("display", "none");
+  }
+  //运费券信息
+  if($("#hiddenCouponDiscount")[0]) {
+    $("#freeFreightPriceId").text("-￥" + $("#hiddenFreeFreight_coupon").val());
+    if($("#hiddenFreeFreight_coupon").val()>0){
+      var couponShow;
+      if(isHasVertualShow){
+        couponShow="| 运费券<em>" + freeFreightCouponUseNum + "</em>张，抵用运费<em>"+parseFloat($("#hiddenFreeFreight_coupon").val()).toFixed(2)+"</em>元";
+      }else{
+        isHasVertualShow=true;
+        couponShow="运费券<em>" + freeFreightCouponUseNum + "</em>张，运费<em>"+parseFloat($("#hiddenFreeFreight_coupon").val()).toFixed(2)+"</em>元";
+      }
+      totaldiscount=eval(parseFloat(totaldiscount)+parseFloat($("#hiddenFreeFreight_coupon").val()));
+      $("#freeFreightShow").html(couponShow);
+      $("#freeFreightShow").css("display", "block");
+    }else{
+      $("#freeFreightShow").css("display", "none");
+    }
+  } else {
+    $("#freeFreightShow").css("display", "none");
+  }
+  //礼品卡信息
+  if($("#giftCardPricehidden").val()>0) {
+    var giftCardDiscount = $("#giftCardPricehidden").val();
+    if(giftCardDiscount>0){
+      var giftcardHtml;
+      if(isHasVertualShow){
+        giftcardHtml="| 礼品卡<em>"+$("#giftCardPriceNum").val()+"</em>张，抵用<em>"+parseFloat(giftCardDiscount).toFixed(2)+"</em>元 ";
+
+      }else{
+        isHasVertualShow=true;
+        giftcardHtml="礼品卡<em>"+$("#giftCardPriceNum").val()+"</em>张，抵用<em>"+parseFloat(giftCardDiscount).toFixed(2)+"</em>元 ";
+      }
+      $("#giftCardShow").html(giftcardHtml);
+      $("#giftCardShow").css("display", "block");
+
+       totaldiscount=eval(parseFloat(totaldiscount)+parseFloat(giftCardDiscount));
+    }else{
+      $("#giftCardShow").css("display", "none");
+    }
+  }else{
+    $("#giftCardShow").css("display", "none");
+  }
+  //京豆
+  if($("#jdBeanexChange").val()>0){
+    $("#jdBeanShow").css("display", "block");
+    var jdbeanHtml;
+    if(isHasVertualShow){
+      jdbeanHtml="| 京豆抵用<em>"+parseFloat($("#jdBeanexChange").val()).toFixed(2)+"</em>元 ";
+    }else{
+      isHasVertualShow=true;
+      jdbeanHtml="京豆抵用<em>"+parseFloat($("#jdBeanexChange").val()).toFixed(2)+"</em>元 ";
+    }
+    $("#jdBeanShow").html(jdbeanHtml);
+    totaldiscount=eval(parseFloat(totaldiscount)+parseFloat($("#jdBeanexChange").val()));
+  }else{
+    $("#jdBeanShow").css("display", "none");
+  }
+  //余额
+  if($("#useBalanceShowDiscount").val()>0){
+    //$(".balanceDiscount").text(parseFloat($("#useBalanceShowDiscount").val()).toFixed(2));
+    var balanceHtml;
+    if(isHasVertualShow){
+      balanceHtml="| 余额抵用<em>"+parseFloat($("#useBalanceShowDiscount").val()).toFixed(2)+"</em>元 ";
+    }else{
+      isHasVertualShow=true;
+      balanceHtml="余额抵用<em>"+parseFloat($("#useBalanceShowDiscount").val()).toFixed(2)+"</em>元 ";
+    }
+    $("#selectOrderBalance").attr("checked", true);
+    $("#balanceShow").html(balanceHtml);
+    $("#balanceShow").css("display", "block");
+    // 修改余额显示
+    var leaveBalance=$("#canUsedBalanceId ").find('.ftx-01:first').text().replace("￥","");
+    var htmlBalance="&nbsp;使用余额（账户当前余额：<span class='ftx-01'>"+leaveBalance+"</span>元,本次使用：<span class='ftx-01'>"+parseFloat($("#useBalanceShowDiscount").val()).toFixed(2)+"</span>元）";
+    $("#canUsedBalanceId").html(htmlBalance);
+    // 剩余可用余额
+    totaldiscount=eval(parseFloat(totaldiscount)+parseFloat($("#useBalanceShowDiscount").val()));
+  }else{
+    $("#selectOrderBalance").attr("checked", false);
+    var leaveBalance=$("#canUsedBalanceId ").find('.ftx-01:first').text().replace("￥","");
+    var htmlBalance="&nbsp;使用余额（账户当前余额：<span class='ftx-01'>"+leaveBalance+"</span>元）";
+    $("#canUsedBalanceId").html(htmlBalance);
+    $("#balanceShow").css("display", "none");
+  }
+  //总金额抵扣
+  $("#total").text("￥"+parseFloat(totaldiscount).toFixed(2));
+};
+
+$("#entityCouponId").click(function(){
+    $(".virtual-add-input .succ-msg").show();
+    setTimeout(function(){
+      $(".virtual-add-input .succ-msg").hide();
+    }, 1500);
+  });
+  /**************** 礼品卡 *******************/
+  // 礼品卡滚动
+  var giftScroll = null;
+  function initGiftScroll (){
+    $(".giftcard-scroll .giftcard-enable").height(130 * Math.ceil($(".giftcard-scroll .giftcard-enable ul li").length / 3));
+    $(".giftcard-scroll .giftcard-disable").height(150 * Math.ceil($(".giftcard-scroll .giftcard-disable ul li").length / 3));
+   // var giftlength = $(".giftcard-scrollbar .giftcard-scroll  ul li").length;
+    var enableItems = Math.ceil($(".giftcard-scroll .giftcard-enable ul li").length / 3);
+    var disableItems = Math.ceil($(".giftcard-scroll .giftcard-disable ul li").length / 3);
+    if((enableItems+disableItems)<3){
+      return;
+    }
+    if(giftScroll){
+      giftScroll.update();
+    } else {
+      giftScroll = $('.giftcard-scrollbar').scrollbar({
+        width: 11,
+        scrollClass: 'ui-scrollbar-item-consignee',
+        mainClass: 'giftcard-scroll',//  ui-scrollbar-main
+        hasHeadTail: !1,
+        limit: !0,
+        wrapHeight: 380
+      });
+    }
+    $('.giftcard-scrollbar').parents(".ui-scrollbar-wrap").show().children().show();
+  }window.initGiftScroll= initGiftScroll;
+
+//重新加载礼品卡列表
+
+function reloadGiftCard(){
+  if($("#isNewVertual").val() == "true"){
+      query_giftCards_vertual();
+      showOrHideJdBean(1);
+   }
+}window.reloadGiftCard = reloadGiftCard;
+
+
+/**
+ * 查询礼品卡列表
+ */
+function query_giftCards_vertual() {
+  var orderGiftCardModule = OrderAppConfig.Module_GiftCard;
+    param = addFlowTypeParam();
+    var url = OrderAppConfig.DynamicDomain + "/giftCard/getGiftCardList.action";
+    jQuery.ajax({
+      type : "POST",
+      dataType : "text",
+      url : url,
+      data : param,
+      async : true,
+      cache : false,
+      success : function(result) {
+        if (isUserNotLogin(result)) {
+          goToLogin();
+          return;
+        }
+        if (isHasMessage(result)) {
+          var message = getMessage(result);
+          showMessageError(message);
+          return;
+        } else {
+          // checkPaymentPasswordSafe(LPK_PWD_TYPE, giftCardType);
+          $("#" + orderGiftCardModule).html(result);
+          newlipinkaInputEventInit(); // 礼品卡输入KEY限制
+        }
+        eInfoTip();
+        changeGiftCardListOrderPrice();
+        refushVertualused();
+      },
+      error : function(XMLHttpResponse) {
+        //alert("系统繁忙，请稍后再试！");
+      }
+    });
+}window.query_giftCards_vertual = query_giftCards_vertual;
+
+function giftCardUseOrCancel(key,giftcardId){
+  if($("#lpkItem_"+ giftcardId ).hasClass("item-selected")){
+      cancelGiftCardVertual(giftcardId);
+  }else{
+    useGiftCardVertual(key,giftcardId);
+  }
+}
+/**
+* 使用礼品卡
+*/
+function useGiftCardVertual(key,giftcardId) {
+  if($("#lpkItem_"+ giftcardId ).hasClass("item-selected")){
+      return;
+  }
+  var url = OrderAppConfig.DynamicDomain + "/giftCard/useGiftCard.action";
+  var param = "giftCardKey=" + key + "&fundsPwdtype=" + LPK_PWD_TYPE;
+  var orderGiftCardModule = OrderAppConfig.Module_GiftCard;
+  param = addFlowTypeParam(param);
+  jQuery.ajax({
+    type : "POST",
+    dataType : "text",
+    url : url,
+    data : param,
+    async : true,
+    cache : false,
+    success : function(result) {
+      // 没有登录跳登录
+      if (isUserNotLogin(result)) {
+        goToLogin();
+        return;
+      }
+      if (result == false || result == "false") {
+        return;
+      }
+      if (isHasMessage(result)) {
+        var message = getMessage(result);
+        alert(message);
+        return;
+      }
+      isNeedPaymentPassword();
+      $("#" + orderGiftCardModule).html(result);
+      changeVertualOrderPrice();
+      newlipinkaInputEventInit(); // 礼品卡输入KEY限制
+    }
+  });
+}window.useGiftCardVertual = useGiftCardVertual;
+/**
+* 取消使用礼品卡
+*/
+function cancelGiftCardVertual(id) {
+  var url = OrderAppConfig.DynamicDomain + "/giftCard/cancelGiftCard.action";
+  var param = "giftCardKey=" + id + "&fundsPwdtype=" + LPK_PWD_TYPE;
+  var orderGiftCardModule = OrderAppConfig.Module_GiftCard;
+  param = addFlowTypeParam(param);
+  jQuery.ajax({
+    type : "POST",
+    dataType : "text",
+    url : url,
+    data : param,
+    async : true,
+    cache : false,
+    success : function(result) {
+      // 没有登录跳登录
+      if (isUserNotLogin(result)) {
+        goToLogin();
+        return;
+      }
+      if (result == false || result == "false") {
+        return;
+      }
+      if (isHasMessage(result)) {
+        var message = getMessage(result);
+        alert(message);
+        return;
+      }
+      $("#" + orderGiftCardModule).html(result);
+      changeVertualOrderPrice();
+      isNeedPaymentPassword();
+      newlipinkaInputEventInit();
+    }
+  });
+}window.cancelGiftCardVertual = cancelGiftCardVertual;
+
+  /**
+   * 粘贴礼品卡密码时自动填充
+   * @param e
+   */
+  function pasteCardPassWord(e, obj){
+      try{
+          var newData;
+          if(window.clipboardData && window.clipboardData.getData("text")){ // for IE
+              newData = window.clipboardData.getData("text");
+          } else if(e && e.clipboardData && e.clipboardData.getData("text")){
+              newData = e.clipboardData.getData("text");
+          } else {
+              return;
+          }
+
+          if(!newData || newData.length == 0){
+              return;
+          }
+
+          newData = newData.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+          newData = newData.replace('O', '0');
+          if(newData.length == 0){
+              return;
+          }
+
+          var id = obj.id;
+          var $eleList = new Array();
+          if(id == "lpkKeyPressFirst"){
+              $eleList.push($("#lpkKeyPressFirst"));
+              $eleList.push($("#lpkKeyPressSecond"));
+              $eleList.push($("#lpkKeyPressThird"));
+              $eleList.push($("#lpkKeyPressFourth"));
+          } else if(id == "lpkKeyPressSecond"){
+              $eleList.push($("#lpkKeyPressSecond"));
+              $eleList.push($("#lpkKeyPressThird"));
+              $eleList.push($("#lpkKeyPressFourth"));
+          } else if(id == "lpkKeyPressThird"){
+              $eleList.push($("#lpkKeyPressThird"));
+              $eleList.push($("#lpkKeyPressFourth"));
+          } else if(id == "lpkKeyPressFourth"){
+              $eleList.push($("#lpkKeyPressFourth"));
+          }
+
+          e.preventDefault ? e.preventDefault() : (e.returnValue = false);  // for IE
+
+          for(var i = 0; i < $eleList.length; i++){
+              $eleList[i].val(newData.slice(0 + i*4, 4 + i*4));
+              $eleList[i].keyup();
+          }
+      } catch (e){
+      }
+  }
+/**
+ * 添加礼品卡
+ */
+function addGiftCardVertual() {
+  if ($("#lpkKeyPressFirst").val() == "" || $("#lpkKeyPressSecond" ).val() == ""
+      || $("#lpkKeyPressThird").val() == "" || $("#lpkKeyPressFourth").val() == "") {
+      //showMessageWarn("请输入密码");
+    $("#lpkKeyPressFirst").parents().find(".tips-msg").hide();
+    $("#lpkKeyPressFirst").parents().find(".error-msg").text("请输入密码");
+    $("#lpkKeyPressFirst").parents().find(".error-msg").show();
+    return;
+  }
+  var param = "couponParam.fundsPwdType=GiftCard";
+  var url = OrderAppConfig.DynamicDomain + "/coupon/checkFundsPwdResult.action";
+  param = addFlowTypeParam(param);
+  jQuery.ajax({
+    type : "POST",
+    dataType : "json",
+    url : url,
+    data : param,
+    async : true,
+    cache : false,
+    success : function(flag) {
+      if (isUserNotLogin(flag)) {
+        goToLogin();
+        return;
+      }
+      if (flag) {
+        var key = $("#lpkKeyPressFirst").val() + "-" + $("#lpkKeyPressSecond").val() + "-"
+          + $("#lpkKeyPressThird").val() + "-" + $("#lpkKeyPressFourth").val();
+        bindGiftCardNoType(key);
+      } else {
+        showLargeMessage("支付密码未开启", "为保障您的账户资金安全，请先开启支付密码");
+        return;
+      }
+    }
+  });
+
+}window.addGiftCardVertual = addGiftCardVertual;
+/**
+* 先绑定再使用
+*/
+function bindGiftCardNoType(key) {
+  var param ="giftCardKey=" + key;
+  var url = OrderAppConfig.DynamicDomain + "/giftCard/bindGiftCard.action";
+
+  var orderGiftCardModule = OrderAppConfig.Module_GiftCard;
+  param = addFlowTypeParam(param);
+  jQuery.ajax({
+    type : "POST",
+    dataType : "text",
+    url : url,
+    data : param,
+    async : true,
+    cache : false,
+    success : function(result) {
+      if (isUserNotLogin(result)) {
+        goToLogin();
+        return;
+      }
+      if (isHasMessage(result)) {
+        var message = getMessage(result);
+        $("#lpkKeyPressFirst").parents().find(".tips-msg").hide();
+        $("#lpkKeyPressFirst").parents().find(".error-msg").text(message);
+        $("#lpkKeyPressFirst").parents().find(".error-msg").show();
+        return;
+      }
+      $("#" + orderGiftCardModule).html(result);
+      useMaterialGiftCardVertual(key);
+      isNeedPaymentPassword();// 是否需要支付密码
+      newlipinkaInputEventInit(); // 礼品卡输入KEY限制
+    }
+  });
+}window.bindGiftCardNoType = bindGiftCardNoType;
+  /**
+  * 使用并绑定礼品卡
+  */
+function useMaterialGiftCardVertual(key) {
+  var param ="&giftCardKey=" + key + "&fundsPwdtype=" + LPK_PWD_TYPE;
+  var orderGiftCardModule = OrderAppConfig.Module_GiftCard;
+  var url =OrderAppConfig.DynamicDomain + "/giftCard/useMaterialGiftCard.action";
+  param = addFlowTypeParam(param);
+  jQuery.ajax({
+    type : "POST",
+    dataType : "text",
+    url : url,
+    data : param,
+    async : true,
+    cache : false,
+    success : function(result) {
+      // 没有登录跳登录
+      if (isUserNotLogin(result)) {
+        goToLogin();
+        return;
+      }
+      if (isHasMessage(result)) {
+        alert("绑定礼品卡成功，不符合使用规则，未使用");
+        return;
+      }
+      checkPaymentPasswordSafeVertual(LPK_PWD_TYPE);
+      $("#" + orderGiftCardModule).html(result);
+      //刷新价格信息
+      changeVertualOrderPrice();
+      isNeedPaymentPassword();// 是否需要支付密码
+      newlipinkaInputEventInit(); // 礼品卡输入KEY限制
+    }
+  });
+}window.useMaterialGiftCardVertual=useMaterialGiftCardVertual;
+/**
+ * 重置所有礼品卡不可用
+ */
+function cancelAllUsedGiftCardsVertual() {
+   $(".giftcard-item .g-detail").each(function() {
+        $(this).removeClass("item-selected");
+    });
+  var orderGiftCardModule = OrderAppConfig.Module_GiftCard;
+  // 发请求取消所有礼品卡的使用
+  param = addFlowTypeParam();
+  var url = OrderAppConfig.DynamicDomain + "/giftCard/cancelAllGiftCard.action";
+  jQuery.ajax({
+    type : "POST",
+    dataType : "text",
+    url : url,
+    data : param,
+    async : true,
+    cache : false,
+    success : function(result) {
+      if (isUserNotLogin(result)) {
+        goToLogin();
+        return;
+      }
+      if (isHasMessage(result)) {
+        var message = getMessage(result);
+        showMessageError(message);
+        return;
+      }
+       checkPaymentPasswordSafeVertual(LPK_PWD_TYPE);
+      $("#" + orderGiftCardModule).html(result);
+      $(".g-detail").each(function() {
+        $(this).removeClass("item-selected");
+      });
+      $("#safeLpkPart").show();
+      changeVertualOrderPrice();
+      newlipinkaInputEventInit(); // 礼品卡输入KEY限制
+    }
+  });
+}window.cancelAllUsedGiftCardsVertual = cancelAllUsedGiftCardsVertual;
+/**
+ * 礼品卡输入事件
+ */
+function newlipinkaInputEventInit() {
+  var orderGiftCardModule = OrderAppConfig.Module_GiftCard;
+  $("#" + orderGiftCardModule + " .itxt").keyup(function() {
+    var $this = $(this);
+    $this.val($this.val().replace(/[^a-zA-Z0-9]/g, '').toUpperCase());
+    $this.val($this.val().replace('O', '0'));
+    if ($this.val().length == 4 && $this.attr('id') != 'lpkKeyPressFourth') {
+      $this.next().next().focus();
+    }
+  });
+   $("#" + orderGiftCardModule + " .itxt").mouseover(function(){
+      if($("#lpkKeyPressFirst").parents().find(".tips-msg").is(":hidden")){
+        $("#lpkKeyPressFirst").parents().find(".tips-msg").show();
+        $("#lpkKeyPressFirst").parents().find(".error-msg").hide();
+      }
+   });
+}window.newlipinkaInputEventInit = newlipinkaInputEventInit;
+/**
+ * 使用优惠券、礼品卡时检查是否开启支付密码
+ * 
+ * @param type
+ */
+function checkPaymentPasswordSafeVertual(type) {
+  var url = OrderAppConfig.DynamicDomain + "/coupon/checkFundsPwdResult.action";
+  var param = "couponParam.fundsPwdType=" + type;
+  param = addFlowTypeParam(param);
+  jQuery.ajax({
+    type : "POST",
+    dataType : "json",
+    url : url,
+    data : param,
+    async : true,
+    cache : false,
+    success : function(result) {
+      if (isUserNotLogin(result)) {
+        goToLogin();
+        return;
+      }
+      if (isHasMessage(result)) {
+        var message = getMessage(result);
+        alert(message);
+        if (obj.checked) {
+          obj.checked = false;
+        }
+        return;
+      }
+      if (!result) {
+        // 增加余额提示开启密码的显示
+        $("#safeBalancePart").removeClass("hide");
+        // 增加优惠券提示开启密码的显示
+        $("#safeJingPart").show();
+        if (type == JING_PWD_TYPE) {
+          cancelAllUsedCoupons();
+          return;
+        } else if (type == LPK_PWD_TYPE) {
+          cancelAllUsedGiftCards(giftCardType);
+          return;
+        }
+      }
+    }
+  });
+}window.checkPaymentPasswordSafeVertual = checkPaymentPasswordSafeVertual;
+
+seajs.use(['jdf/1.0.0/ui/tips/1.0.0/tips'],function(tips){
+function vertualCoupontips(){
+  var $el = $("#container");
+  virtualTips = $el.tips({
+      tipsClass: "coupon-tips",
+      trigger: ".c-type-r",
+      width: 535,
+      type: 'hover',
+      sourceTrigger: '#tooltip-box04',
+      callback:function(trigger,obj){
+        var couponKey = $(trigger).attr("id");
+        if(couponKey == undefined)
+          return;
+        var availableType = $(trigger).parent().parent().hasClass("c-detail-disable")? 1 : 0;
+        //availableType == 0 ?:"该券不可用商品列表"
+        $('.coupon-tit',obj).html("该券可用商品列表");
+        var param = "couponParam.couponKey=" + couponKey+"&couponParam.availableType="+availableType;;
+        param = addFlowTypeParam(param);
+        var url = OrderAppConfig.AsyncDomain + "/coupon/getSkuInfoByCouponKey.action";
+        jQuery.ajax({
+          type : "POST",
+          dataType : "text",
+          url : url,
+          data : param,
+          async : true,
+          cache : false,
+          success : function(result) {
+            if (isUserNotLogin(result)) {
+            goToLogin();
+            return;
+          }
+          if (isHasMessage(result)) {
+            var message = getMessage(result);
+            alert(message);
+            return;
+          }
+            $("#v-goods",obj).html(result);
+          },
+          error : function(XMLHttpResponse) {
+            alert("系统繁忙，请稍后再试！");
+          }
+        });
+      }
+
+  });
+}window.vertualCoupontips=vertualCoupontips;
+
+});
+
+
+  /*********************vertual change price****************************/
+  function changeVertualOrderPrice() {
+     // 已优惠的礼品卡金额
+/*  if ($("#hiddenGiftCardDiscount-giftCard")[0]) {
+    $("#giftCardPriceId").text("-￥" + $("#hiddenGiftCardDiscount-giftcard").val());
+    if ($("#hiddenGiftCardDiscount-giftcard").val() > 0) {
+      $("#showGiftCardPrice").show();
+    } else {
+      $("#showGiftCardPrice").hide();
+    }
+  }
+  // 余额
+  if ($("#hiddenUsedBalance-giftcard")[0]) {
+    $("#usedBalanceId").text("-￥" + $("#hiddenUsedBalance-giftcard").val());
+    if ($("#hiddenUsedBalance-giftcard").val() > 0) {
+      $("#showUsedOrderBalance").show();
+    } else {
+      $("#showUsedOrderBalance").hide();
+    }
+  }
+  // 实际应付金额
+  if ($("#hiddenPayPrice-giftcard")[0]) {
+    modifyNeedPay($("#hiddenPayPrice" + "-" + giftCardType).val());
+  }*/
+    save_Pay(0);
+  }window.changeVertualOrderPrice = changeVertualOrderPrice;
+
+ function changeGiftCardListOrderPrice() {
+     // 已优惠的礼品卡金额
+  if ($("#hiddenGiftCardDiscount-giftcard").val()) {
+    $("#giftCardPriceId").text("-￥" + $("#hiddenGiftCardDiscount-giftcard").val());
+    $("#giftCardPricehidden").val($("#hiddenGiftCardDiscount-giftcard").val());
+    if($("#hiddenGiftCardDiscount-giftcard").val() > 0) {
+      $("#showGiftCardPrice").show();
+       $("#giftCardPriceNum").val($("#hiddenGiftCardNum-giftcard").val());
+    } else {
+      $("#showGiftCardPrice").hide();
+      $("#giftCardPriceNum").val(0);
+      $("#giftCardPricehidden").val(0);
+    }
+  }else{
+     $("#showGiftCardPrice").hide();
+     $("#giftCardPriceNum").val(0);
+    $("#giftCardPricehidden").val(0);
+  }
+  // 余额
+  if ($("#hiddenUsedBalance-giftcard")) {
+    $("#usedBalanceId").text("-￥" + $("#hiddenUsedBalance-giftcard").val());
+    if ($("#hiddenUsedBalance-giftcard").val() > 0) {
+      $("#showUsedOrderBalance").show();
+      $("#useBalanceShowDiscount").val($("#hiddenUsedBalance-giftcard").val());
+    } else {
+      $("#showUsedOrderBalance").hide();
+      $("#useBalanceShowDiscount").val(0);
+    }
+  }
+  // 实际应付金额
+  if ($("#hiddenPayPrice-giftcard")[0]) {
+    modifyNeedPay($("#hiddenPayPrice-giftcard").val());
+  }
+  
+  };
+
+
+
+  /************* event ***************/
+  // cancel button
+  $(".order-virtual").delegate(".item-selected", "mousemove", function(){
+    $(".item-selected-cancel", this).removeClass("hide");
+  });
+  $(".order-virtual").delegate(".item-selected", "mouseleave", function(){
+    $(".item-selected-cancel", this).addClass("hide");
+  });
+  // click
+
+ /******异步处理******/
+
+  function refushHasAvailableVertual(dataResult) {
+    if(dataResult.availableCouponNum>0){
+     showCouponItem(true);
+     vertualShow();
+    }else{
+     showCouponItem(false);
+     vertualhide();
+    }
+    if(dataResult.availableGiftNum>0){
+      showGiftItem(true);
+    }else{
+      showGiftItem(false);
+    }
+    if(dataResult.availableJdBeanNum>=1000){
+     showJdbeanItem(true);
+    }else{
+     showJdbeanItem(false);
+    }
+    if (dataResult.balance && dataResult.balance.success){
+      if(dataResult.balance.leavyMoney>0){
+         showBalanceItem(true);
+      }
+    }else{
+      showBalanceItem(false);
+    }
+  }window.refushHasAvailableVertual = refushHasAvailableVertual;
+
+  function vertualHidOrShow(){
+    if($("#virtualdiv").hasClass("step-toggle-on")){
+      vertualhide();
+    }else{
+      vertualShow();
+    }
+  }
+  //隐藏虚拟资产div
+  function vertualhide(){
+      $(".order-virtual").css("display", "none");
+      $("#virtualdiv").removeClass("step-toggle-on");
+      $("#virtualdiv").addClass("step-toggle-off");
+  }
+  //展开虚拟资产div
+  function vertualShow(){
+      $(".order-virtual").css("display", "block");
+      $("#virtualdiv").removeClass("step-toggle-off");
+      $("#virtualdiv").addClass("step-toggle-on");
+     initCouponScroll();
+  }
+
+  function showCouponItem(flag){
+    if(flag){
+      $("#couponitem").html('<span>优惠券</span><i></i>');
+      $("#bestCouponDiv").css("display", "block");
+      $("#couponsplit").css("display", "block");
+    }else{
+      $("#couponitem").html('<span>优惠券</span><i style="display: none"></i>');
+      $("#bestCouponDiv").css("display", "none");
+      $("#couponsplit").css("display", "none");
+    }
+  }window.showCouponItem = showCouponItem;
+
+  function showGiftItem(flag){
+    if(flag){
+      $("#giftitem").html('<span>京东卡&nbsp;/&nbsp;E卡</span><i></i>');
+    }else{
+      $("#giftitem").html('<span>京东卡&nbsp;/&nbsp;E卡</span><i style="display: none"></i>');
+    }
+  }window.showGiftItem = showGiftItem;
+
+  function showJdbeanItem(flag){
+     if(flag){
+      $("#jdbeanitem").html('<span>京豆</span><i></i>');
+    }else{
+      $("#jdbeanitem").html('<span>京豆</span><i style="display: none"></i>');
+    }
+  }window.showJdbeanItem = showJdbeanItem;
+
+  function showBalanceItem(flag){
+    if(flag){
+      $("#balanceitem").html('<span>余额</span><i></i>');
+    }else{
+      $("#balanceitem").html('<span>余额</span><i style="display: none"></i>');
+    }
+  }window.showJdbeanItem = showJdbeanItem;

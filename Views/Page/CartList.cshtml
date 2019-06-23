@@ -1,0 +1,111 @@
+﻿@model IEnumerable<JdShopEx.Models.Cart>
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+   
+    
+    <title>My JSP 'cart.jsp' starting page</title>
+    
+	<style>
+		*{padding:0px;margin:0px;}
+		.bigdiv{width:1000px;}
+		.header{width:1000px;height:45px;border:1px solid rgb(233,233,233);background:rgb(243,243,243);}
+		.nvl{width:100%;margin-top:15px;}
+		.nvl li{list-style:none;
+			float:left;height:15px;line-height:15px;font-size:13px;color:rgb(102,102,102);
+		}
+		.nvl li:nth-child(1){width:130px;margin-left:15px;}
+		.nvl li:nth-child(2){width:380px;margin-left:15px;}
+		.nvl li:nth-child(3){width:94px;}
+		.nvl li:nth-child(4){width:90px;}
+		.nvl li:nth-child(5){width:70px;}
+		.sp{width:1000px;height:100px;clear:both;}
+		
+		.sp li{float:left;list-style:none;line-height:100px;}
+		.sp li:nth-child(1){width:130px;margin-left:15px;}
+		.sp li:nth-child(2){width:380px;margin-left:15px;}
+		.sp li:nth-child(3){width:94px;}
+		.sp li:nth-child(4){width:90px;}
+		.sp li:nth-child(5){width:70px;}
+		.sp img{margin:10px;}
+		
+		.add{border:1px solid rgb(202,203,203);background:white;color:#bbb;font-size:13px;width:18px;height:18px;}
+		.text{text-align:center;width:46px;border:1px solid rgb(202,203,203);font-size:13px;height:18px;}
+		.btn{width:112px;height:37px;background-color:rgb(223,48,51);border:none;color:white;font-weight:bold;}
+	</style>
+
+  </head>
+  
+  <body>
+	  	<div class="bigdiv">
+	  		<div class="header">
+	  			<ul id="cart"  class="nvl">
+	  				<li><input type="checkbox" /></li>
+	  				<li>商品</li>
+	  				<li>单价</li>
+	  				<li>数量</li>
+	  				
+	  				<li>操作</li>
+	  			</ul>
+	  		</div>
+	  		<form action="" method="post">
+	  		@foreach (var cart in @Model)
+            {
+	  		<ul class="sp">
+                <li><input type="checkbox" value="@cart.CartId"/><img style="width:82px;height:82px;" src="@cart.Goods.GoodsImg"/></li>
+	  			<li>@cart.Goods.GoodsName</li>
+	  			<li>@cart.Goods.GoodsPrice</li>
+	  			<li>
+	  			<input value="-"  type="button" class="add" onclick="minus(@cart.CartId,this)"/><input  value="@cart.Count" class="text"/><input value="+" type="button" class="add" onclick="add(@cart.CartId,this)"/>
+	  			</li>
+	  			
+	  			<li></li>
+                </ul>
+            }
+	  		<div style="width:200px;float:right;">总计:<font color="red" size="7" id="sumprice">1111</font></div>
+	  		<div style="width:150px;float:right;"><input value="结算" type="submit" class="btn"/></div>
+	  		</form>
+	  	</div>
+	  	
+  </body>
+</html>
+
+
+
+<script src="/Content/js/jquery-1.6.4.js"></script>
+<script>
+    $(function () {
+        $(":checkbox").change(function () {
+            var ids = [];
+            $.each($(":checked"), function (i, o) {
+                ids[i] = $(o).val();
+            });
+
+            $.ajax({
+                url: "ComputedPrice",
+                type: "GET",
+                data: {
+                    cartId:ids
+                },
+                traditional: true,
+                success: function (data) {
+                    $("#sumprice").html(data);
+                }
+            });
+        });
+    });
+    //加购物车商品的
+    function add(cartid, element) {
+        var text = $(element).parent().find(":text");
+        $(text).val(parseInt($(text).val())+1);
+        $.post("ChangeCount", { cartId: cartid, count: $(text).val() }, function () { });
+    }
+    function minus(cartid, element) {
+        var text = $(element).parent().find(":text");
+        $(text).val(parseInt($(text).val()) - 1);
+        $.post("ChangeCount", { cartId: cartid, count: $(text).val() }, function () { });
+       
+    }
+</script>

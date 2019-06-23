@@ -1,0 +1,12 @@
+﻿@model JdShopEx.Models.Goods
+
+@{
+    ViewBag.Title = "GoodsDetail";
+}
+
+<h2>GoodsDetail</h2>
+
+<h3>@Model.GoodsId</h3>
+<h3>@Model.GoodsName</h3>
+<h3>@Model.GoodsPrice</h3>
+<a href="../AddCart/@Model.GoodsId">加入购物车</a>

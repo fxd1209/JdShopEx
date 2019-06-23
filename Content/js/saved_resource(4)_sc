@@ -1,0 +1,2 @@
+/* user-cart no-login.js Date:2017-01-09 17:12:33 */
+$(function(){function a(){}a.prototype={constructor:a,init:function(){var a='<a href="//sale.jd.com/act/SzPTlx3jyXdgBa.html" clstag="pageclick|keycount|cart_201610202|5" target="_self" class="act act-20170112"></a>';var b=new Date(2017,0,12);var c=new Date(2017,1,4);var d=new Date;d>b&&c>d&&($(a).insertBefore(".cart-empty li:eq(1)"),$(".cart-empty li:eq(1)").css("line-height","46px"))}};var b=new a;b.init()});

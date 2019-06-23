@@ -1,0 +1,249 @@
+﻿
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<link rel="stylesheet" href="/Content/css/index.css"/>
+<script src="/Content/js/jquery-1.6.4.js"></script>
+<script>
+    $(function () {
+        page(1);
+    });
+
+    //ajax分页的功能
+    function page(index) {
+        //提交要搜索的商品标题和当前的页数
+        $.post("GoodsList", { pageIndex: index, title: $(".search").val() }, function (data) {
+            var goodsList = data.Goods;
+            var pageIndex = data.PageInfo.PageIndex;
+            var total = data.PageInfo.Total;
+            var str = '';
+            $.each(goodsList, function (i, o) {
+                str += '<li>';
+                str += '<img class="goodsimg" src="' + o.GoodsImg + '"/>';
+                str += '<span class="price">' + o.GoodsPrice + '</span>';
+                str += '<span class="title">' + o.GoodsName + '</span>';
+                str += '<img class="addcart" onclick="addCart('+o.GoodsId+')" src="/Content/image/addcart.png"/></li>';
+            });
+            //拼接分页的商品列表
+            $(".goods_list").html(str);
+            //拼接分页按钮
+            str = '';
+            //判断上一页
+            if (pageIndex == 1) {
+                str += '<input type="button" value="上一页"  class="prev pagebtn" disabled="disabled"/>';
+            } else {
+                str += '<input type="button" value="上一页" onclick="page(' + (pageIndex - 1) + ')"  class="prev pagebtn"/>';
+            }
+            //判断中间页面
+            var pageSize = 10; //页面数量
+            //当前总页数小于设定的最大页数
+            if (total <= pageSize) {
+                for (var i = 1; i <= total; i++) {
+                    str += '<input onclick="page(' + i + ')" class="pagebtn" type="button" value="' + i + '"/>';
+                }
+            } else {
+                //前四页不变
+                if (pageIndex <= parseInt(pageSize / 2) + 1) {
+                    for (var i = 1; i <= pageSize; i++) {
+                        btn += '<input onclick="page(' + i + ')" class="pagebtn" type="button" value="' + i + '"/>';
+                    }
+                } else {
+                    //如果不是前四页
+                    if (pageIndex <= (total - parseInt(pageSize / 2))) {
+                        for (var i = pageIndex - parseInt(pageSize / 2);
+        					i <= pageIndex + parseInt(pageSize / 2); i++) {
+                            btn += '<input onclick="page(' + i + ')" class="pagebtn" type="button" value="' + i + '"/>';
+                        }
+                    } else {
+                        for (var i = total - (pageSize - 1); i <= total; i++) {
+                            btn += '<input onclick="page(' + i + ')" class="pagebtn" type="button" value="' + i + '"/>';
+                        }
+                    }
+                }
+            }
+            //判断下一页
+            if (pageIndex == total) {
+                str += '<input type="button" value="下一页"  class="next pagebtn" disabled="disabled"/>';
+            } else {
+                str += '<input type="button" value="下一页" onclick="page(' + (pageIndex + 1) + ')"  class="next pagebtn"/>';
+            }
+            str += '<span class="total_count">共' + total + '页</span>';
+            str += '<span class="skip">到第&nbsp; <input class="skip_txt" value="1"/>&nbsp;页';
+            str += '<input type="button" value="确定" onclick="tiaoye(' + total + ')" class="pagebtn skip_btn"/></span>';
+            $(".btns").html(str);
+            loadCart(); //加载购物车列表到隐藏的div中
+        });
+    }
+    //异步把商品添加到购物车
+    function addCart(id) {
+        $.post("AjaxAddCart", { id: id }, function (data) {
+            alert(data);
+            loadCart();//添加完成后重新加载购物车列表
+        });
+    }
+
+    //ajax获得购物车列表
+    function loadCart() {
+        $.get("LoadCartList", null, function (data) {
+            var list = data.cartList;
+            var sumprice = 0;
+            var count = 0;
+            var str = '';
+            $.each(list, function (i, o) {
+                count += o.Count;                       //统计总件数
+                sumprice += o.Goods.GoodsPrice * o.Count; //统计总价
+                str += '<li>';
+                str += '<img class="img" src="' + o.Goods.GoodsImg + '"/><div class="name">' + o.Goods.GoodsName + '</div>';
+                str += '<div class="price">￥' + o.Goods.GoodsPrice + 'x' + o.Count + '</div>';
+                str += '</li>';
+            });
+            $(".detail>ul").html(str);
+            $(".count").html(count);
+            if (count > 0) {
+                $(".sum_price>span").html("共" + count + "件商品 共计￥" + sumprice);
+            } else {
+                $(".sum_price>span").html("空空如也!!!!!");
+            }
+
+        });
+    }
+
+    //跳页
+    function tiaoye(total) {
+        var val = parseInt($(".skip_txt").val());
+        if (val < 0 || val > total) {
+            val = total;
+        }
+        page(val);
+    }
+</script>
+</head>
+
+<body>
+	
+	<!--头部灰色div-->
+	<div class="bg_nav">
+    	<div class="head_nav">
+        	<!--logo 、城市 、导航-->
+        	<div class="logo_div"></div>
+            <div class="city_div">
+            	<div>北京</div>
+                <!--城市-->
+                <div>
+                	xzcxzcxzcxzc
+                </div>
+            </div>
+            <ul class="nav">
+            	<li>@ViewBag.username</li>
+                
+                <li class="sp"><div></div></li>
+                <li>我的订单</li>
+                <li class="sp"><div></div></li>
+                
+                <li class="myjd" style="padding-right:0px;">
+                	<div class="myjd1">我的京东</div>
+                    <div class="myjd2"></div>
+                </li>
+                
+                <li class="sp"><div></div></li>
+                <li>京东会员</li>
+                <li class="sp"><div></div></li>
+                <li>企业采购</li>
+                <li class="sp"><div></div></li>
+                <li class="kehu" style="padding-right:0px;">
+                	<div class="kehu1">客户服务</div>
+                    <div class="kehu2"></div>
+                </li>
+                <li class="sp"><div></div></li>
+                <li style="position:relative;padding-right:18px;">网站导航 
+                	<div class="iconfont"></div>
+                </li>
+                <li class="sp"><div></div></li>
+                <li style="position:relative;">手机京东
+                	
+                	<!--<div class="jiantou"></div>
+                    <div class="phone_jd"></div>-->
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--导航结束-->
+    <!--搜索块-->
+    <div style="width:1190px;margin:auto;">
+    	<div class="head2">
+        	<!--搜索块-->
+            <div style="position:relative;">
+            	<input class="search" placeholder="常温酸奶"/>
+                <input type="button" class="search_btn" value="搜索" onclick="page(1)"/>
+                
+                <div class="mysc">
+                	<div  class="sc1">
+                        <div class="car">我的购物车
+                            <div class="count">0</div>
+                        </div>
+                    </div>
+                    <!--购物车详情-->
+                    <div class="detail">
+                        <ul>
+                            
+                             
+                        </ul>
+                        <div class="sum_price">
+                            <span>共4件商品 共计￥8888.00</span>
+                            <a href='CartList'>购物车</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="resou">
+ <span style="color:red;">3折秒杀</span>&nbsp;&nbsp;新iPad直降&nbsp;&nbsp;水溶肥5折&nbsp;&nbsp;珠宝萌宠&nbsp;&nbsp;72小时狂欢&nbsp;&nbsp;养生壶&nbsp;&nbsp;外置光驱&nbsp;&nbsp;京东超市&nbsp;&nbsp;水果礼盒
+                </div>
+            </div>
+            <!--搜索块GG-->
+        </div>
+    </div>
+    <!--列表部分-->
+    <div style="width:100%;border-bottom:2px solid red;">
+    <div class="center">
+    			<div class="allgoodstype">全部商品分类</div>
+                <ul class="miaosha">
+                	<li style="margin-left:15px;">秒杀</li>
+                    <li>优惠券</li>
+                    <li>闪购</li>
+                    <li>拍卖</li>
+                    <li class="sp1"><div></div></li>
+                    <li>服装厂</li>
+                    <li>京东超市</li>
+                    <li>生鲜</li>
+                    <li>全球购</li>
+                    <li class="sp1"><div></div></li>
+                    <li>京东金融</li>
+                </ul>
+    </div>
+    </div>
+    <!--分页商品-->
+    <div class="goods_list_content">
+    	 <!--商品列表-->
+        <ul class="goods_list">
+       
+        </ul>
+        <!--分页按钮-->
+        <div class="btns">
+        	<input type="button" value="上一页" class="prev pagebtn"/>
+            <input type="button" value="1" class="pagebtn"/>
+            <input type="button" value="2" class="pagebtn"/>
+            <input type="button" value="3" class="pagebtn"/>
+            <span class="dd">...</span>
+            <input type="button" value="8" class="pagebtn"/>
+            <input type="button" value="下一页" class="next pagebtn"/>
+            
+            <span class="total_count">共8页</span>
+            <span class="skip">到第&nbsp; <input class="skip_txt" value="5"/>&nbsp;页
+            	<input type="button" value="确定" class="pagebtn skip_btn"/>
+            </span>
+        </div>
+    </div>
+   
+</body>
+</html>
