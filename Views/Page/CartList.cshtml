@@ -6,8 +6,8 @@
   <head>
    
     
-    <title>My JSP 'cart.jsp' starting page</title>
-    
+    <title>购物车</title>
+    <meta charset="utf-8" />
 	<style>
 		*{padding:0px;margin:0px;}
 		.bigdiv{width:1000px;}
@@ -46,7 +46,6 @@
 	  				<li>商品</li>
 	  				<li>单价</li>
 	  				<li>数量</li>
-	  				
 	  				<li>操作</li>
 	  			</ul>
 	  		</div>
@@ -58,13 +57,12 @@
 	  			<li>@cart.Goods.GoodsName</li>
 	  			<li>@cart.Goods.GoodsPrice</li>
 	  			<li>
-	  			<input value="-"  type="button" class="add" onclick="minus(@cart.CartId,this)"/><input  value="@cart.Count" class="text"/><input value="+" type="button" class="add" onclick="add(@cart.CartId,this)"/>
+	  			<input value="-"  type="button" class="add" onclick="minus(@cart.CartId,this)"/><input  value="@cart.Count" class="text"/><input value="+" type="button" class="add" onclick="add(@cart.CartId,this)"/><input value="删除" type="button" class="btn" onclick="del(@cart.CartId)" />
 	  			</li>
-	  			
-	  			<li></li>
+                <li></li>
                 </ul>
             }
-	  		<div style="width:200px;float:right;">总计:<font color="red" size="7" id="sumprice">1111</font></div>
+	  		<div style="width:200px;float:right;">总计:<font color="red" size="7" id="sumprice">0</font></div>
 	  		<div style="width:150px;float:right;"><input value="结算" type="submit" class="btn"/></div>
 	  		</form>
 	  	</div>
@@ -102,10 +100,15 @@
         $(text).val(parseInt($(text).val())+1);
         $.post("ChangeCount", { cartId: cartid, count: $(text).val() }, function () { });
     }
+    //减少购物车商品
     function minus(cartid, element) {
         var text = $(element).parent().find(":text");
         $(text).val(parseInt($(text).val()) - 1);
         $.post("ChangeCount", { cartId: cartid, count: $(text).val() }, function () { });
        
+        }
+    //删除购物车商品
+    function del(cartid) {
+        $.post("DelCartId", { cartId: cartid },function () { });
     }
 </script>
