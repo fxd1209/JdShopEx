@@ -29,7 +29,7 @@
                     str += '<span class="price mg-l-5-per">' + o.GoodsPrice + '</span>';
                     str += '<span class="title mg-l-5-per">' + o.GoodsName + '</span>'; 
                     str += '<a href="javascript:void(0);" class="btn btn-danger mg-l-5-per" onclick="addCart(' + o.GoodsId + ')"><span class="glyphicon glyphicon-plus-sign"></span> 加购物车</a> ';
-                    str += '<a href="javascript:void(0);" class="btn btn-danger mg-r-5-per"onclick="goodsDetailJs(' + o.GoodsId + ')"><span class="glyphicon glyphicon-info-sign"></span> 详情</a></li>';
+                    str += '<a href="GoodsDetail" class="btn btn-danger mg-r-5-per" onclick="goodsDetailJs(' + o.GoodsId + ')"><span class="glyphicon glyphicon-info-sign"></span> 详情</a></li>';
                 });
                 //拼接分页的商品列表
                 $(".goods_list").html(str);
@@ -126,7 +126,7 @@
 
         //跳转到商品详情页面
         function goodsDetailJs(goodsid) {
-            $.post("GoodsDetail", { goodsId: goodsid });
+            $.post("GoodsDetailJs", { goodsId: goodsid });
         }
     </script>
 </head>

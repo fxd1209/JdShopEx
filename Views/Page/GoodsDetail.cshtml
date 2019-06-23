@@ -1,15 +1,18 @@
 ﻿@model JdShopEx.Models.Goods
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+@{ 
+    var goodDetail = (JdShopEx.Models.Goods)Session["GoodDetail"];
+}
 <head>
-    <title> @Model.GoodsName 详情页面</title>
+    <title> @goodDetail.GoodsName 详情页面</title>
     <meta charset="utf-8"/>
 </head>
 <body>
-    <div><img src="@Model.GoodsImg"/></div>
+    <div><img src="@goodDetail.GoodsImg"/></div>
     <div>
-        <h3>@Model.GoodsName</h3>
-        <span>@Model.GoodsPrice</span>
+        <h3>@goodDetail.GoodsName</h3>
+        <span>@goodDetail.GoodsPrice</span>
         <span>商品详细信息描述</span>
-        <a href="../AddCart/@Model.GoodsId">加入购物车</a>
+        <a href="../AddCart/@goodDetail.GoodsId">加入购物车</a>
     </div>
 </body>
