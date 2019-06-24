@@ -59,6 +59,9 @@
                             <span class="glyphicon glyphicon-usd"></span> 结算
                         </a>
                     </div>
+                    <div>
+                        <span><a href="/Page/AddAdress">添加收货地址</a></span>      
+                    </div>
                 </div>
             </form>
 	  	</div>
@@ -82,12 +85,14 @@
         //$("#imgtalk").val("值");
         //$("#imgtalk").attr("value", "值");
         //document.getElementById("imgtalk").value = "值";
+        orderdetail();
         document.getElementById("total-money").value= total;
         
     }
     var getSumPriceList = function(tableId){
         var rows = document.getElementById(tableId).rows.length;  //已经有的行数
         let priceList = [];
+       
         for (let i = 1; i < rows; i++) {  //第0行是表头
             let temp = {};
             temp.price = table.rows[i].cells[3].innerHTML; //单价
@@ -95,6 +100,7 @@
             var sumprice = parseFloat(temp.price) * parseInt(temp.count);
             temp.totalPrice = sumprice; //总价
             priceList.push(temp);
+          
         }
         return priceList;
     }
@@ -115,7 +121,7 @@
             });
 
             $.ajax({
-                url: "ComputedPrice",
+                url: "OrderDetail",
                 type: "GET",
                 data: {
                     cartId: ids

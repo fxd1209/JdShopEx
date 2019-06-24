@@ -11,7 +11,7 @@ namespace JdShopEx.Models
         public int Total { get; set; }                      //订单总价
         public DateTime CreatedDate { get; set; }           //订单创建时间
         public int UserId { get; set; }                     //订单所属用户id
-
+        public string Address { get; set;}                 //收货地址
         public User user { get; set; }                      // 订单所属用户
         public List<OrderDetail> OrderDetails { get; set; } //订单详情列表
     }

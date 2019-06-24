@@ -11,6 +11,7 @@ namespace JdShopEx.Controllers
     {
         //首先需要创建一个数据库上下文访问的对象
         StoreDBContext db = new StoreDBContext();
+        Cart[] carts = null; //购物车要结算的物品
 
         //get方式，直接访问名为Login.cshtml的视图
         [HttpGet]
@@ -78,7 +79,7 @@ namespace JdShopEx.Controllers
         public ActionResult GoodsList(string title = "", int pageIndex = 1)
         {
             //然后设置每页显示的条数
-            int pageSize = 10;
+            int pageSize = 12;
             //根据商品的编号排序，然后contains模糊查询 ,然后通过skip和take取得数据
             var goods = db.Goods.Where(g => g.GoodsName.Contains(title)).OrderBy(g => g.GoodsId).Skip((pageIndex - 1) * pageSize).Take(pageSize);
             //构建视图模型，填充商品列表和分页的数据
@@ -189,26 +190,31 @@ namespace JdShopEx.Controllers
             return View(carts);
         }
 
-        //ajax计算价格
-        public JsonResult ComputedPrice(int[] cartId)
+        //ajax
+        public JsonResult OrderDetail(int[] cartId)
         {
             double sum = 0;
             /*添加if-else判断，当购物车为空时，不会抛出异常*/
+            carts = null;
             if (cartId == null)
             {
                 sum = 0000;
             }
             else
             {
-                foreach (int id in cartId)
+                /*foreach (int id in cartId)
                 {
                     Cart cart = db.Carts.Include("Goods").Single(c => c.CartId == id);
-                    sum += cart.Count * cart.Goods.GoodsPrice;
+                    carts[]
+                }*/
+                for (int i = 0; i < cartId.Length; i++)
+                {
+                    carts[i] = db.Carts.Include("Goods").Single(c => c.CartId == cartId[i ]);
                 }
             }
-
+         //   Session["Sum"] = sum;
             //get方式访问一定要后面这句
-            return Json(sum, JsonRequestBehavior.AllowGet);
+            return Json(null);
         }
         //ajax更改购物车商品的数目
         public JsonResult ChangeCount()
@@ -237,18 +243,61 @@ namespace JdShopEx.Controllers
         public ActionResult GoodsDetail()
         {
             int goodsid = int.Parse(Request.Params["goodsId"]);
-          //  int goodsid = int.Parse(Request["goodsId"]);
             var good = db.Goods.Find(goodsid);
             ViewData["GoodDetail"] = good;
-            //  Session["GoodDetail"] = good;
             return View();
         }
-        //显示商品详细信息
-         //public  ActionResult GoodsDetail()
-         //{
+
+        public JsonResult OrderDetail()
+        {
+            var goodsIds = Request["GoodsId"];
             
-         //    return View();
-         //}
+
+
+          /* foreach(var gid in goodsIds)
+            {
+
+            }*/
+            
+            return Json(null);
+        }
+        /*添加收货地址*/
+        public ActionResult AddAdress()
+        {
+            return View();
+        }
+        /*处理收获地址*/
+        public JsonResult Address()
+        {
+            var user = (User)Session["user"];
+            string city = Request.Params["City"];
+            string detailAdr = Request.Params["DetailAdr"];
+            Order order = new Order();
+            order.UserId = user.UserId;
+            order.user = user;
+            order.CreatedDate = DateTime.Now;
+            order.Total = int.Parse(Session["Sum"].ToString());
+            order.Address = city + detailAdr;
+            List<OrderDetail> orderDetails = null;
+             for(int i = 0; i < carts.Length; i++)
+            {
+                orderDetails[i].Count = carts[i].Count;
+                orderDetails[i].Goods = carts[i].Goods;
+                orderDetails[i].GoodsId = carts[i].GoodsId;
+                orderDetails[i].SmallPlan = carts[i].Goods.GoodsPrice * carts[i].Count;
+                orderDetails[i].OrderId = order.OrderId;
+                db.OrderDetails.Add(orderDetails[i]);
+                db.SaveChanges();
+            }
+            order.OrderDetails = orderDetails;
+            db.SaveChanges();
+          return Json("OrderDetail");
+        }
+
+        public ActionResult ShowOrderDetail()
+        {
+            return View();
+        }
     }
     
 }

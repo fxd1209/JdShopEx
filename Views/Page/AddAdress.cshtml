@@ -1,0 +1,49 @@
+﻿
+@{
+    ViewBag.Title = "AddAdress";
+}
+    <head>
+        <title>添加收货地址</title>
+        <meta charset="utf-8" />
+        <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
+        <script src="https://cdn.bootcss.com/distpicker/2.0.1/distpicker.js"></script>
+        <link rel="stylesheet" href="~/Content/css/style.css" />
+
+        <script src="/Content/js/jquery-1.6.4.js"></script>
+        <script>
+            $(function () {
+                $('#target').distpicker({
+                    province: '---- 所在省 ----',
+                    city: '---- 所在市 ----',
+                    district: '---- 所在区 ----'
+                });
+            })
+        </script>
+    </head>
+    <body>
+        <div>
+            <h3>添加收货地址</h3>
+            <div data-toggle="distpicker" data-autoselect="3" id="target">
+                省、市、区:
+                <select></select>
+                <select></select>
+                <select></select>
+            </div>
+            <br />
+            详细地址:<input type="text" value="" id="detailAdr" />
+            <br/>
+            <input type="button" value="确定" onclick="AddAdr()" />
+            <br />
+        </div>
+       
+    </body>
+<script>
+    function AddAdr() {
+        var city = $("#target").html;
+        var detailAdr = $("detailAdr").html;
+        $.post("Address", { City: city, DetaiAdr: detailAdr });
+    }
+</script>
+
+
+
