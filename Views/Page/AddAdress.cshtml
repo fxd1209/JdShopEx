@@ -19,29 +19,100 @@
                 });
             })
         </script>
+        <style>
+            .fm input,select{
+                width:156px !important;
+            }
+        </style>
     </head>
     <body>
-        <div>
-            <h3>添加收货地址</h3>
-            <div data-toggle="distpicker" data-autoselect="3" id="target">
-                省、市、区:
-                <select></select>
-                <select></select>
-                <select></select>
-            </div>
-            <br />
-            详细地址:<input type="text" value="" id="detailAdr" />
-            <br/>
-            <input type="button" value="确定" onclick="AddAdr()" />
-            <br />
+        <div class="col-sm-2 mg-t-20 well" style="border-right:1px dashed red; height:380px;">
+            <img src="~/Content/Images/take-out.jpg" style="width:100%; height:65%;" />
         </div>
-       
+        <div class="col-sm-9 mg-t-20 mg-l-20 well">
+            <form role="form" class="form-inline fm">
+                <h4>添加收货地址</h4>
+                <div class="row col-sm-12 mg-b-10">
+                    <label for="name" class="control-label">姓名:</label>
+                    <input class="form-control" type="text" id="name" name="name" />
+                </div>
+                <div data-toggle="distpicker" data-autoselect="3" id="target" class="row">
+                    <div class="col-sm-4">
+                        <label for="province" class="control-label">省份:</label>
+                        <select id="province" class="form-control" name="province"></select>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="town" class="control-label">市县:</label>
+                        <select id="town" class="form-control" name="town"></select>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="region" class="control-label">区域:</label>
+                        <select id="region" class="form-control" name="region"></select>
+                    </div>
+                </div>
+                <hr style="width:100%; border:1px dashed red;">
+                <label class="control-label" for="detailAdr">详细地址:</label>
+                <textarea class="form-control" type="text" value="" placeholder="请输入详细地址……" id="detailAdr" name="detailAdr" rows="2" cols="90"></textarea>
+                <div class="mg-t-10">
+                    <label class="control-label" for="postalcode">邮政编码:</label>
+                    <input class="form-control" id="postalcode" name="postalcode" type="text" placeholder="6位邮政编码……" />
+                </div>
+                <div class="mg-t-10">
+                    <label class="control-label" for="phone">联系方式:</label>
+                    <input class="form-control" id="phone" name="phone" type="text" placeholder="手机号码……" />
+                </div>
+                <div class="mg-t-10">
+                    <label class="control-label" for="sub">&emsp;&emsp;&emsp;&emsp;</label>
+                    <input class="btn btn-default" id="sub" type="button" value="确定保存" onclick="AddAdr()" />
+                </div>
+
+            </form>
+        </div>
+        <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+        <script src="~/Content/js/layer/layer.js"></script>
+        <script src="~/Content/js/utils.js"></script>
     </body>
 <script>
+
     function AddAdr() {
-        var city = $("#target").html;
-        var detailAdr = $("detailAdr").html;
-        $.post("Address", { City: city, DetaiAdr: detailAdr });
+        var name = $("#name").val();
+        var province = $("#province").val();
+        var town = $("#town").val();
+        var region = $("#region").val();
+        var detailAdr = $("#detailAdr").val();
+        var postalcode = $("#postalcode").val();
+        var phone = $("#phone").val();
+
+        if (isEmpty(name)) {
+            layer.msg("请输入收件人姓名!");
+            return;
+        }
+        if (!isEmpty(phone) && !(/^1[3456789]\d{9}$/.test(phone))) {
+            layer.msg("请输入合法手机号!");
+            return;
+        }
+        var name = $("#name").val();
+        var province = $("#province").val();
+        var town = $("#town").val();
+        var region = $("#region").val();
+        var detailAdr = $("#detailAdr").val();
+        var postalcode = $("#postalcode").val();
+        var phone = $("#phone").val();
+        var params = {
+            "name": name,
+            "province": province,
+            "town": town,
+            "region": region,
+            "detailAdr": detailAdr,
+            "postalcode": postalcode,
+            "phone": phone
+        };
+        console.log(JSON.stringify(params));
+        var msg = sendMessageSync("Address", params);
+        if (msg == "ok") {
+            layer.msg("添加成功");
+        }
+        //$.post("Address", { City: city, DetaiAdr: detailAdr });
     }
 </script>
 

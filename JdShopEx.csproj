@@ -184,6 +184,7 @@
     <Content Include="Content\css\tips_list.css" />
     <Content Include="Content\css\tips_ord.css" />
     <Content Include="Content\Images\maomaozi.jpg" />
+    <Content Include="Content\Images\take-out.jpg" />
     <Content Include="Content\Images\zhouheiya.jpg" />
     <Content Include="Content\Images\加菲猫.png" />
     <Content Include="Content\Images\卷发棒.png" />
@@ -760,6 +761,8 @@
     <Content Include="Views\Page\Register.cshtml" />
     <Content Include="Views\Page\ShowGoods.cshtml" />
     <Content Include="Views\Page\CartList.cshtml" />
+    <Content Include="Views\Page\AddAdress.cshtml" />
+    <Content Include="Views\Page\ShowOrderDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

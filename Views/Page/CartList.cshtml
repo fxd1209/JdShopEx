@@ -10,71 +10,77 @@
 </head>
 
   <body>
-	  	<div class="container car-list mg-t-56">
-            <form action="" method="post">
-                <table class="table table-striped table-hover" id="table">
-                    <thead class="header">
-                        <tr>
-                            <td><input type="checkbox" /></td>
-                            <th>图示</th>
-                            <th>商品</th>
-                            <th>单价</th>
-                            <th>总价</th>
-                            <th>数量</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var cart in @Model)
-                        {
-                            <tr>
-                                <td><input type="checkbox" value="@cart.CartId" /></td>
-                                <td><img style="width:82px;height:82px;" src="@cart.Goods.GoodsImg" /></td>
-                                <td>@cart.Goods.GoodsName</td>
-                                <td>@cart.Goods.GoodsPrice</td>
-                                <td></td>
-                                <td>
-                                    <a href="javascript:void(0);" class="btn btn-default" onclick="minus(@cart.CartId,this)"><span class="glyphicon glyphicon-minus"></span></a>
-                                    <input value="@cart.Count" type="text" class="btn btn-default" style="width:56px;" />
-                                    <a href="javascript:void(0);" class="btn btn-default" onclick="add(@cart.CartId,this)"><span class="glyphicon glyphicon-plus"></span></a>
-                                </td>
-                                <td>
-                                    <a href="javascript:void(0);" class="btn btn-danger" onclick="del(@cart.CartId,this)">
-                                        <span class="glyphicon glyphicon-trash"></span> 删除
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                <div>
-                    <div class="pull-left">
-                        <a href="javascript:void(0);" class="btn btn-danger" style="margin-right:70px;" onclick="JavaScript:window.location.href = document.referrer; ">
-                            <span class="glyphicon glyphicon-backward"></span> 返回首页
-                        </a>
-                    </div>
-                    <div class="pull-right">
-                        <span>总计:</span><input type="text" value="0" class="total-money" id="total-money" readonly />
-                        <a href="javascript:void(0);" class="btn btn-danger" style="margin-right:70px;" onclick="totalPrice()">
-                            <span class="glyphicon glyphicon-usd"></span> 结算
-                        </a>
-                    </div>
-                    <div>
-                        <span><a href="/Page/AddAdress">添加收货地址</a></span>      
-                    </div>
-                </div>
-            </form>
-	  	</div>
+      <div class="container car-list mg-t-56">
+          <div class="pull-left">
+              <a href="javascript:void(0);" class="btn btn-danger" style="margin-right:70px;" onclick="JavaScript:window.location.href = document.referrer; ">
+                  <span class="glyphicon glyphicon-backward"></span> 返回首页
+              </a>
+          </div>
+          <div class="pull-left">
+              <a href="javascript:void(0);" class="btn btn-danger" style="margin-right:70px;" onclick="addAddressPopUpLayer('/Page/AddAdress ',' '); ">
+                  <span class="glyphicon glyphicon-backward"></span> 添加收货地址
+              </a>
+          </div>
+          <form action="" method="post" class="mg-t-56">
+              <table class="table table-striped table-hover" id="table">
+                  <thead class="header">
+                      <tr>
+                          <td><input type="checkbox" /></td>
+                          <th>图示</th>
+                          <th>商品</th>
+                          <th>单价</th>
+                          <th>总价</th>
+                          <th>数量</th>
+                          <th>操作</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      @foreach (var cart in @Model)
+                      {
+                          <tr>
+                              <td><input type="checkbox" value="@cart.CartId" /></td>
+                              <td><img style="width:82px;height:82px;" src="@cart.Goods.GoodsImg" /></td>
+                              <td>@cart.Goods.GoodsName</td>
+                              <td>@cart.Goods.GoodsPrice</td>
+                              <td></td>
+                              <td>
+                                  <a href="javascript:void(0);" class="btn btn-default" onclick="minus(@cart.CartId,this)"><span class="glyphicon glyphicon-minus"></span></a>
+                                  <input value="@cart.Count" type="text" class="btn btn-default" style="width:56px;" />
+                                  <a href="javascript:void(0);" class="btn btn-default" onclick="add(@cart.CartId,this)"><span class="glyphicon glyphicon-plus"></span></a>
+                              </td>
+                              <td>
+                                  <a href="javascript:void(0);" class="btn btn-danger" onclick="del(@cart.CartId,this)">
+                                      <span class="glyphicon glyphicon-trash"></span> 删除
+                                  </a>
+                              </td>
+                          </tr>
+                      }
+                  </tbody>
+              </table>
+              <div>
+
+                  <div class="pull-right">
+                      <span>总计:</span><input type="text" value="0" class="total-money" id="total-money" readonly />
+                      <a href="javascript:void(0);" class="btn btn-danger" style="margin-right:70px;" onclick="totalPrice()">
+                          <span class="glyphicon glyphicon-usd"></span> 结算
+                      </a>
+                  </div>
+
+              </div>
+          </form>
+      </div>
   </body>
 </html>
 
 <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
 <script src="~/Content/js/layer/layer.js"></script>
+<script src="~/Content/js/utils.js"></script>
 <script>
+    
     $(function () {
         setSumPrice("table");
     });
-
+    
     var totalPrice=function(){
         var jsonList = getSumPriceList("table");
         var total = 0;
@@ -85,10 +91,19 @@
         //$("#imgtalk").val("值");
         //$("#imgtalk").attr("value", "值");
         //document.getElementById("imgtalk").value = "值";
-        orderdetail();
-        document.getElementById("total-money").value= total;
-        
-    }
+        document.getElementById("total-money").value = total;
+
+        //获取选中的ids
+        var ids = [];  //存放选中的值
+        $.each($(":checked"), function (i, o) {
+            ids[i] = $(o).val();
+        });
+        var params = {
+            "cartId": ids
+        }
+        var msg = sendMessageSync("OrderDetail", params);
+        if (msg == "ok") layer.msg("结算成功");
+        };
     var getSumPriceList = function(tableId){
         var rows = document.getElementById(tableId).rows.length;  //已经有的行数
         let priceList = [];
@@ -113,26 +128,27 @@
             table.rows[i].cells[4].innerHTML = sumprice;
         }
     }
-    $(function () {
-        $(":checkbox").change(function () {
-            var ids = [];
-            $.each($(":checked"), function (i, o) {
-                ids[i] = $(o).val();
-            });
 
-            $.ajax({
-                url: "OrderDetail",
-                type: "GET",
-                data: {
-                    cartId: ids
-                },
-                traditional: true,
-                success: function (data) {
-                    $("#sumprice").html(data);
-                }
-            });
-        });
-    });
+    //$(function () {
+    //    $(":checkbox").change(function () {
+    //        var ids = [];
+    //        $.each($(":checked"), function (i, o) {
+    //            ids[i] = $(o).val();
+    //        });
+
+    //        $.ajax({
+    //            url: "OrderDetail",
+    //            type: "GET",
+    //            data: {
+    //                cartId: ids
+    //            },
+    //            traditional: true,
+    //            success: function (data) {
+    //                $("#sumprice").html(data);
+    //            }
+    //        });
+    //    });
+    //});
     //加购物车商品的
     function add(cartid, element) {
         var text = $(element).parent().find(":text");
@@ -177,5 +193,34 @@
         //if (tbody.rows.length == 1) {
         //    tbody.parentNode.removeChild(tbody);
         //}
+    };
+    /**
+ * 添加地址弹出层
+ *pageurl 弹出层路径
+ * submiturl 弹出层数据提交路径
+ */
+    var addAddressPopUpLayer = function (pageurl, submiturl) {
+        layer.open({
+            type: 2,//2表示弹出框类型
+            title: '详情',
+            skin: 'CLYM-style',
+            btn: ['确定', "关闭"],
+            maxmin: false,
+            area: ['1156px', '656px'],
+            shift: 1,//弹出框动画效果
+            scrollbar: false, // 父页面 滚动条 禁止
+            content: pageurl,
+            //确定按钮被点击 ,index 当前层索引 layero 当前层的doc 顺序和success的相反
+            yes: function (index, layero) {
+                layer.close(index);
+            },
+            btn2: function (index, layero) {
+                window.location.reload();//刷新页面
+            },
+            //弹出界面成功后执行
+            success: function (layero, index) { },
+            //layer结束时调用
+            end: function () { }
+        })
     };
 </script>

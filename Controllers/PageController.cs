@@ -269,6 +269,17 @@ namespace JdShopEx.Controllers
         /*处理收获地址*/
         public JsonResult Address()
         {
+            /*TODO: 前端传来的收货地址如下:
+              var params = {
+            "name": name,  //收货人
+            "province": province,  //省
+            "town": town,   //市
+            "region": region, //区
+            "detailAdr": detailAdr,  //详细地址
+            "postalcode": postalcode,   //邮编
+            "phone": phone    //联系方式
+        };
+             */
             var user = (User)Session["user"];
             string city = Request.Params["City"];
             string detailAdr = Request.Params["DetailAdr"];
