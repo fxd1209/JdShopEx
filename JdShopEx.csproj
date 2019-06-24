@@ -183,6 +183,7 @@
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\tips_list.css" />
     <Content Include="Content\css\tips_ord.css" />
+    <Content Include="Content\Images\jt-01.jpg" />
     <Content Include="Content\Images\maomaozi.jpg" />
     <Content Include="Content\Images\take-out.jpg" />
     <Content Include="Content\Images\zhouheiya.jpg" />
